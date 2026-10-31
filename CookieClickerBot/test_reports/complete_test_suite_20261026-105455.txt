@@ -1,0 +1,1225 @@
+CookieClickerBot Windows Complete Test Suite
+Project: C:\Users\Owner\Downloads\workspace (4)\CookieClickerBot
+Started: 2026-10-26T10:54:54
+Total: 1208; PASS: 1207; FAIL: 0; WARN: 1; SKIP: 0; Seconds: 1.26
+
+=== 01 / Project layout and readable source | PASS 125 FAIL 0 WARN 0 SKIP 0 ===
+[T0001] PASS Required file exists: run.py
+[T0002] PASS Non-empty file: run.py -- 8866 bytes
+[T0003] PASS UTF-8 BOM absent: run.py
+[T0004] PASS No embedded NUL: run.py
+[T0005] PASS Required file exists: ccbot/__init__.py
+[T0006] PASS Non-empty file: ccbot/__init__.py -- 102 bytes
+[T0007] PASS UTF-8 BOM absent: ccbot/__init__.py
+[T0008] PASS No embedded NUL: ccbot/__init__.py
+[T0009] PASS Required file exists: ccbot/bridge.py
+[T0010] PASS Non-empty file: ccbot/bridge.py -- 14538 bytes
+[T0011] PASS UTF-8 BOM absent: ccbot/bridge.py
+[T0012] PASS No embedded NUL: ccbot/bridge.py
+[T0013] PASS Required file exists: ccbot/config.py
+[T0014] PASS Non-empty file: ccbot/config.py -- 9873 bytes
+[T0015] PASS UTF-8 BOM absent: ccbot/config.py
+[T0016] PASS No embedded NUL: ccbot/config.py
+[T0017] PASS Required file exists: ccbot/engine.py
+[T0018] PASS Non-empty file: ccbot/engine.py -- 27806 bytes
+[T0019] PASS UTF-8 BOM absent: ccbot/engine.py
+[T0020] PASS No embedded NUL: ccbot/engine.py
+[T0021] PASS Required file exists: ccbot/log.py
+[T0022] PASS Non-empty file: ccbot/log.py -- 13910 bytes
+[T0023] PASS UTF-8 BOM absent: ccbot/log.py
+[T0024] PASS No embedded NUL: ccbot/log.py
+[T0025] PASS Required file exists: ccbot/paths.py
+[T0026] PASS Non-empty file: ccbot/paths.py -- 1405 bytes
+[T0027] PASS UTF-8 BOM absent: ccbot/paths.py
+[T0028] PASS No embedded NUL: ccbot/paths.py
+[T0029] PASS Required file exists: ccbot/saves.py
+[T0030] PASS Non-empty file: ccbot/saves.py -- 3638 bytes
+[T0031] PASS UTF-8 BOM absent: ccbot/saves.py
+[T0032] PASS No embedded NUL: ccbot/saves.py
+[T0033] PASS Required file exists: ccbot/server.py
+[T0034] PASS Non-empty file: ccbot/server.py -- 11610 bytes
+[T0035] PASS UTF-8 BOM absent: ccbot/server.py
+[T0036] PASS No embedded NUL: ccbot/server.py
+[T0037] PASS Required file exists: ccbot/js/00_core.js
+[T0038] PASS Non-empty file: ccbot/js/00_core.js -- 14126 bytes
+[T0039] PASS UTF-8 BOM absent: ccbot/js/00_core.js
+[T0040] PASS No embedded NUL: ccbot/js/00_core.js
+[T0041] PASS Required file exists: ccbot/js/10_state.js
+[T0042] PASS Non-empty file: ccbot/js/10_state.js -- 10216 bytes
+[T0043] PASS UTF-8 BOM absent: ccbot/js/10_state.js
+[T0044] PASS No embedded NUL: ccbot/js/10_state.js
+[T0045] PASS Required file exists: ccbot/js/20_basic.js
+[T0046] PASS Non-empty file: ccbot/js/20_basic.js -- 17234 bytes
+[T0047] PASS UTF-8 BOM absent: ccbot/js/20_basic.js
+[T0048] PASS No embedded NUL: ccbot/js/20_basic.js
+[T0049] PASS Required file exists: ccbot/js/30_store.js
+[T0050] PASS Non-empty file: ccbot/js/30_store.js -- 9713 bytes
+[T0051] PASS UTF-8 BOM absent: ccbot/js/30_store.js
+[T0052] PASS No embedded NUL: ccbot/js/30_store.js
+[T0053] PASS Required file exists: ccbot/js/40_garden.js
+[T0054] PASS Non-empty file: ccbot/js/40_garden.js -- 28144 bytes
+[T0055] PASS UTF-8 BOM absent: ccbot/js/40_garden.js
+[T0056] PASS No embedded NUL: ccbot/js/40_garden.js
+[T0057] PASS Required file exists: ccbot/js/50_market.js
+[T0058] PASS Non-empty file: ccbot/js/50_market.js -- 11377 bytes
+[T0059] PASS UTF-8 BOM absent: ccbot/js/50_market.js
+[T0060] PASS No embedded NUL: ccbot/js/50_market.js
+[T0061] PASS Required file exists: ccbot/js/60_temple_grimoire.js
+[T0062] PASS Non-empty file: ccbot/js/60_temple_grimoire.js -- 9048 bytes
+[T0063] PASS UTF-8 BOM absent: ccbot/js/60_temple_grimoire.js
+[T0064] PASS No embedded NUL: ccbot/js/60_temple_grimoire.js
+[T0065] PASS Required file exists: ccbot/js/70_ascend.js
+[T0066] PASS Non-empty file: ccbot/js/70_ascend.js -- 16113 bytes
+[T0067] PASS UTF-8 BOM absent: ccbot/js/70_ascend.js
+[T0068] PASS No embedded NUL: ccbot/js/70_ascend.js
+[T0069] PASS Required file exists: ccbot/js/90_api.js
+[T0070] PASS Non-empty file: ccbot/js/90_api.js -- 15085 bytes
+[T0071] PASS UTF-8 BOM absent: ccbot/js/90_api.js
+[T0072] PASS No embedded NUL: ccbot/js/90_api.js
+[T0073] PASS Required file exists: ccbot/web/index.html
+[T0074] PASS Non-empty file: ccbot/web/index.html -- 12389 bytes
+[T0075] PASS UTF-8 BOM absent: ccbot/web/index.html
+[T0076] PASS No embedded NUL: ccbot/web/index.html
+[T0077] PASS Required file exists: ccbot/web/app.js
+[T0078] PASS Non-empty file: ccbot/web/app.js -- 73901 bytes
+[T0079] PASS UTF-8 BOM absent: ccbot/web/app.js
+[T0080] PASS No embedded NUL: ccbot/web/app.js
+[T0081] PASS Required file exists: ccbot/web/style.css
+[T0082] PASS Non-empty file: ccbot/web/style.css -- 9172 bytes
+[T0083] PASS UTF-8 BOM absent: ccbot/web/style.css
+[T0084] PASS No embedded NUL: ccbot/web/style.css
+[T0085] PASS Required file exists: tests/mock_game.js
+[T0086] PASS Non-empty file: tests/mock_game.js -- 37046 bytes
+[T0087] PASS UTF-8 BOM absent: tests/mock_game.js
+[T0088] PASS No embedded NUL: tests/mock_game.js
+[T0089] PASS Required file exists: tests/run_engine_test.js
+[T0090] PASS Non-empty file: tests/run_engine_test.js -- 23172 bytes
+[T0091] PASS UTF-8 BOM absent: tests/run_engine_test.js
+[T0092] PASS No embedded NUL: tests/run_engine_test.js
+[T0093] PASS Required file exists: tests/test_python.py
+[T0094] PASS Non-empty file: tests/test_python.py -- 18622 bytes
+[T0095] PASS UTF-8 BOM absent: tests/test_python.py
+[T0096] PASS No embedded NUL: tests/test_python.py
+[T0097] PASS Required file exists: tests/test_ui.py
+[T0098] PASS Non-empty file: tests/test_ui.py -- 23433 bytes
+[T0099] PASS UTF-8 BOM absent: tests/test_ui.py
+[T0100] PASS No embedded NUL: tests/test_ui.py
+[T0101] PASS Required file exists: install.bat
+[T0102] PASS Non-empty file: install.bat -- 3255 bytes
+[T0103] PASS UTF-8 BOM absent: install.bat
+[T0104] PASS No embedded NUL: install.bat
+[T0105] PASS Required file exists: start_bot.bat
+[T0106] PASS Non-empty file: start_bot.bat -- 1309 bytes
+[T0107] PASS UTF-8 BOM absent: start_bot.bat
+[T0108] PASS No embedded NUL: start_bot.bat
+[T0109] PASS Required file exists: uninstall.bat
+[T0110] PASS Non-empty file: uninstall.bat -- 3689 bytes
+[T0111] PASS UTF-8 BOM absent: uninstall.bat
+[T0112] PASS No embedded NUL: uninstall.bat
+[T0113] PASS Required file exists: doctor.bat
+[T0114] PASS Non-empty file: doctor.bat -- 536 bytes
+[T0115] PASS UTF-8 BOM absent: doctor.bat
+[T0116] PASS No embedded NUL: doctor.bat
+[T0117] PASS Directory shape: ccbot
+[T0118] PASS Directory shape: ccbot/js
+[T0119] PASS Directory shape: ccbot/web
+[T0120] PASS Directory shape: tests
+[T0121] PASS Directory shape: patch_backups
+[T0122] PASS Config path is project-root-relative
+[T0123] PASS Browser profile path is project-root-relative
+[T0124] PASS Save path is project-root-relative
+[T0125] PASS Test report target stays under project root
+=== 02 / Python syntax and module structure | PASS 69 FAIL 0 WARN 0 SKIP 0 ===
+[T0126] PASS At least eight Python source files discovered -- 15
+[T0127] PASS Python AST parses: ccbot/__init__.py
+[T0128] PASS Python AST has nodes: ccbot/__init__.py
+[T0129] PASS Python BOM absent: ccbot/__init__.py
+[T0130] PASS Python has no NUL: ccbot/__init__.py
+[T0131] PASS Python AST parses: ccbot/bridge.py
+[T0132] PASS Python AST has nodes: ccbot/bridge.py
+[T0133] PASS Python BOM absent: ccbot/bridge.py
+[T0134] PASS Python has no NUL: ccbot/bridge.py
+[T0135] PASS Python AST parses: ccbot/config.py
+[T0136] PASS Python AST has nodes: ccbot/config.py
+[T0137] PASS Python BOM absent: ccbot/config.py
+[T0138] PASS Python has no NUL: ccbot/config.py
+[T0139] PASS Python AST parses: ccbot/engine.py
+[T0140] PASS Python AST has nodes: ccbot/engine.py
+[T0141] PASS Python BOM absent: ccbot/engine.py
+[T0142] PASS Python has no NUL: ccbot/engine.py
+[T0143] PASS Python AST parses: ccbot/log.py
+[T0144] PASS Python AST has nodes: ccbot/log.py
+[T0145] PASS Python BOM absent: ccbot/log.py
+[T0146] PASS Python has no NUL: ccbot/log.py
+[T0147] PASS Python AST parses: ccbot/paths.py
+[T0148] PASS Python AST has nodes: ccbot/paths.py
+[T0149] PASS Python BOM absent: ccbot/paths.py
+[T0150] PASS Python has no NUL: ccbot/paths.py
+[T0151] PASS Python AST parses: ccbot/saves.py
+[T0152] PASS Python AST has nodes: ccbot/saves.py
+[T0153] PASS Python BOM absent: ccbot/saves.py
+[T0154] PASS Python has no NUL: ccbot/saves.py
+[T0155] PASS Python AST parses: ccbot/server.py
+[T0156] PASS Python AST has nodes: ccbot/server.py
+[T0157] PASS Python BOM absent: ccbot/server.py
+[T0158] PASS Python has no NUL: ccbot/server.py
+[T0159] PASS Python AST parses: run.py
+[T0160] PASS Python AST has nodes: run.py
+[T0161] PASS Python BOM absent: run.py
+[T0162] PASS Python has no NUL: run.py
+[T0163] PASS Python AST parses: tests/gen_screenshots.py
+[T0164] PASS Python AST has nodes: tests/gen_screenshots.py
+[T0165] PASS Python BOM absent: tests/gen_screenshots.py
+[T0166] PASS Python has no NUL: tests/gen_screenshots.py
+[T0167] PASS Python AST parses: tests/test_advanced.py
+[T0168] PASS Python AST has nodes: tests/test_advanced.py
+[T0169] PASS Python BOM absent: tests/test_advanced.py
+[T0170] PASS Python has no NUL: tests/test_advanced.py
+[T0171] PASS Python AST parses: tests/test_complete_suite.py
+[T0172] PASS Python AST has nodes: tests/test_complete_suite.py
+[T0173] PASS Python BOM absent: tests/test_complete_suite.py
+[T0174] PASS Python has no NUL: tests/test_complete_suite.py
+[T0175] PASS Python AST parses: tests/test_live.py
+[T0176] PASS Python AST has nodes: tests/test_live.py
+[T0177] PASS Python BOM absent: tests/test_live.py
+[T0178] PASS Python has no NUL: tests/test_live.py
+[T0179] PASS Python AST parses: tests/test_python.py
+[T0180] PASS Python AST has nodes: tests/test_python.py
+[T0181] PASS Python BOM absent: tests/test_python.py
+[T0182] PASS Python has no NUL: tests/test_python.py
+[T0183] PASS Python AST parses: tests/test_ui.py
+[T0184] PASS Python AST has nodes: tests/test_ui.py
+[T0185] PASS Python BOM absent: tests/test_ui.py
+[T0186] PASS Python has no NUL: tests/test_ui.py
+[T0187] PASS Engine class is defined
+[T0188] PASS Engine method contract: __init__
+[T0189] PASS Engine method contract: public_state
+[T0190] PASS Engine method contract: submit
+[T0191] PASS Engine method contract: request_stop
+[T0192] PASS Engine method contract: start_browser
+[T0193] PASS Engine method contract: run
+[T0194] PASS Engine method contract: shutdown
+=== 03 / Windows batch launcher integrity | PASS 15 FAIL 0 WARN 1 SKIP 0 ===
+[T0195] PASS install.bat: CRLF line endings
+[T0196] PASS install.bat: no UTF-8 BOM
+[T0197] PASS install.bat: UTF-8 code page configured
+[T0198] PASS install.bat: no obvious delayed-expansion/path interaction
+[T0199] PASS start_bot.bat: CRLF line endings
+[T0200] PASS start_bot.bat: no UTF-8 BOM
+[T0201] PASS start_bot.bat: UTF-8 code page configured
+[T0202] PASS start_bot.bat: no obvious delayed-expansion/path interaction
+[T0203] PASS uninstall.bat: CRLF line endings
+[T0204] PASS uninstall.bat: no UTF-8 BOM
+[T0205] PASS uninstall.bat: UTF-8 code page configured
+[T0206] WARN uninstall.bat: delayed-expansion/path review -- setlocal delayed expansion is present; verify paths containing ! remain supported
+[T0207] PASS doctor.bat: CRLF line endings
+[T0208] PASS doctor.bat: no UTF-8 BOM
+[T0209] PASS doctor.bat: UTF-8 code page configured
+[T0210] PASS doctor.bat: no obvious delayed-expansion/path interaction
+=== 04 / JavaScript modules and bundle | PASS 46 FAIL 0 WARN 0 SKIP 0 ===
+[T0211] PASS JS module exists: 00_core.js
+[T0212] PASS JS module has substantive content: 00_core.js -- 14126 bytes
+[T0213] PASS JS module has no BOM: 00_core.js
+[T0214] PASS JS module has expected code markers: 00_core.js
+[T0215] PASS JS module exists: 10_state.js
+[T0216] PASS JS module has substantive content: 10_state.js -- 10216 bytes
+[T0217] PASS JS module has no BOM: 10_state.js
+[T0218] PASS JS module has expected code markers: 10_state.js
+[T0219] PASS JS module exists: 20_basic.js
+[T0220] PASS JS module has substantive content: 20_basic.js -- 17234 bytes
+[T0221] PASS JS module has no BOM: 20_basic.js
+[T0222] PASS JS module has expected code markers: 20_basic.js
+[T0223] PASS JS module exists: 30_store.js
+[T0224] PASS JS module has substantive content: 30_store.js -- 9713 bytes
+[T0225] PASS JS module has no BOM: 30_store.js
+[T0226] PASS JS module has expected code markers: 30_store.js
+[T0227] PASS JS module exists: 40_garden.js
+[T0228] PASS JS module has substantive content: 40_garden.js -- 28144 bytes
+[T0229] PASS JS module has no BOM: 40_garden.js
+[T0230] PASS JS module has expected code markers: 40_garden.js
+[T0231] PASS JS module exists: 50_market.js
+[T0232] PASS JS module has substantive content: 50_market.js -- 11377 bytes
+[T0233] PASS JS module has no BOM: 50_market.js
+[T0234] PASS JS module has expected code markers: 50_market.js
+[T0235] PASS JS module exists: 60_temple_grimoire.js
+[T0236] PASS JS module has substantive content: 60_temple_grimoire.js -- 9048 bytes
+[T0237] PASS JS module has no BOM: 60_temple_grimoire.js
+[T0238] PASS JS module has expected code markers: 60_temple_grimoire.js
+[T0239] PASS JS module exists: 70_ascend.js
+[T0240] PASS JS module has substantive content: 70_ascend.js -- 16113 bytes
+[T0241] PASS JS module has no BOM: 70_ascend.js
+[T0242] PASS JS module has expected code markers: 70_ascend.js
+[T0243] PASS JS module exists: 90_api.js
+[T0244] PASS JS module has substantive content: 90_api.js -- 15085 bytes
+[T0245] PASS JS module has no BOM: 90_api.js
+[T0246] PASS JS module has expected code markers: 90_api.js
+[T0247] PASS Generated JS bundle is large enough -- 127547
+[T0248] PASS Generated bundle includes global namespace
+[T0249] PASS Generated bundle includes run() entry point
+[T0250] PASS Generated bundle includes all engine modules
+[T0251] PASS Global namespace is not repeatedly redefined
+[T0252] PASS Bundle module names are present in sorted order
+[T0253] PASS Node syntax check of built engine bundle
+[T0254] PASS Node syntax check of management UI app.js
+[T0255] PASS Node syntax check of mock game
+[T0256] PASS Node syntax check of engine regression runner
+=== 05 / Management UI rendering and minigame-lock safety | PASS 85 FAIL 0 WARN 0 SKIP 0 ===
+[T0257] PASS shared lock helper is defined
+[T0258] PASS inert is toggled on locked panels
+[T0259] PASS aria-disabled state is maintained
+[T0260] PASS locked panel class is maintained
+[T0261] PASS interactive form controls are covered
+[T0262] PASS pre-lock disabled state is remembered
+[T0263] PASS controls are disabled while locked
+[T0264] PASS temporary lock state is cleaned up
+[T0265] PASS garden lock follows live readiness
+[T0266] PASS market lock follows live readiness
+[T0267] PASS pantheon lock follows live readiness
+[T0268] PASS grimoire lock follows live readiness
+[T0269] PASS garden grid is referenced
+[T0270] PASS garden legend is referenced
+[T0271] PASS market configuration area is referenced
+[T0272] PASS pantheon table is referenced
+[T0273] PASS grimoire table is referenced
+[T0274] PASS unlocked/locked Japanese labels exist
+[T0275] PASS re-unlock guidance is provided
+[T0276] PASS shared minigame interaction guard is reused
+[T0277] PASS UI has contract for nav selector
+[T0278] PASS UI has contract for status selector
+[T0279] PASS UI has contract for banner selector
+[T0280] PASS UI has contract for chart selector
+[T0281] PASS UI has contract for module grid selector
+[T0282] PASS UI has contract for quick actions selector
+[T0283] PASS UI has contract for config grid selector
+[T0284] PASS UI has contract for raw config selector
+[T0285] PASS UI has contract for garden grid selector
+[T0286] PASS UI has contract for garden legend selector
+[T0287] PASS UI has contract for market config selector
+[T0288] PASS UI has contract for market table selector
+[T0289] PASS UI has contract for pantheon panel selector
+[T0290] PASS UI has contract for god table selector
+[T0291] PASS UI has contract for spell table selector
+[T0292] PASS UI has contract for save table selector
+[T0293] PASS UI has contract for log box selector
+[T0294] PASS UI has contract for garden bulk action selector
+[T0295] PASS UI has contract for seed select selector
+[T0296] PASS UI has contract for market broker selector
+[T0297] PASS UI has contract for market sell selector
+[T0298] PASS CSS has locked-panel visual treatment
+[T0299] PASS CSS signals disabled controls
+[T0300] PASS CSS has responsive media rules
+[T0301] PASS UI creates nodes through DOM API
+[T0302] PASS UI uses fetch for API communications
+[T0303] PASS UI serializes POST payloads
+[T0304] PASS UI reports command outcomes
+[T0305] PASS UI schedules state refresh after commands
+[T0306] PASS UI tab definition can be located
+[T0307] PASS UI tab exists: dash
+[T0308] PASS UI tab exists: mods
+[T0309] PASS UI tab exists: store
+[T0310] PASS UI tab exists: garden
+[T0311] PASS UI tab exists: market
+[T0312] PASS UI tab exists: temple
+[T0313] PASS UI tab exists: ascend
+[T0314] PASS UI tab exists: logs
+[T0315] PASS UI tab exists: saves
+[T0316] PASS UI tab exists: raw
+[T0317] PASS UI tab keys are unique
+[T0318] PASS UI has ten or more tabs -- 10
+[T0319] PASS Static HTML does not repeat element IDs
+[T0320] PASS Base HTML has element id #nav
+[T0321] PASS Base HTML has element id #statusPill
+[T0322] PASS Base HTML has element id #banner
+[T0323] PASS Base HTML has element id #chart
+[T0324] PASS Base HTML has element id #modGrid
+[T0325] PASS Base HTML has element id #quickActions
+[T0326] PASS Base HTML has element id #cfgGrid
+[T0327] PASS Base HTML has element id #rawCfg
+[T0328] PASS Base HTML has element id #gardenGrid
+[T0329] PASS Base HTML has element id #gardenLegend
+[T0330] PASS Base HTML has element id #marketCfg
+[T0331] PASS Base HTML has element id #mTable
+[T0332] PASS Base HTML has element id #panBox
+[T0333] PASS Base HTML has element id #godTable
+[T0334] PASS Base HTML has element id #spellTable
+[T0335] PASS Base HTML has element id #sTable
+[T0336] PASS Base HTML has element id #logbox
+[T0337] PASS Market lock message has a clear text fallback
+[T0338] PASS Minigame UI sections are named explicitly
+[T0339] PASS Dragon/Santa unlocked state is represented in UI
+[T0340] PASS UI has disabled-state attributes
+[T0341] PASS UI has HTML text escaping helper
+=== 06 / Exhaustive config schema (three checks per leaf) | PASS 648 FAIL 0 WARN 0 SKIP 0 ===
+[T0342] PASS Config has at least 100 default leaf entries -- 156
+[T0343] PASS Config default read: browser.url -- expected='https://orteil.dashnet.org/cookieclicker/', actual='https://orteil.dashnet.org/cookieclicker/'
+[T0344] PASS Config JSON round trip: browser.url -- "https://orteil.dashnet.org/cookieclicker/"
+[T0345] PASS Config scalar read is stable: browser.url
+[T0346] PASS Config default read: browser.headless -- expected=False, actual=False
+[T0347] PASS Config JSON round trip: browser.headless -- false
+[T0348] PASS Config scalar read is stable: browser.headless
+[T0349] PASS Config default read: browser.channel -- expected='auto', actual='auto'
+[T0350] PASS Config JSON round trip: browser.channel -- "auto"
+[T0351] PASS Config scalar read is stable: browser.channel
+[T0352] PASS Config default read: browser.userDataDir -- expected='browser_profile', actual='browser_profile'
+[T0353] PASS Config JSON round trip: browser.userDataDir -- "browser_profile"
+[T0354] PASS Config scalar read is stable: browser.userDataDir
+[T0355] PASS Config default read: browser.windowSize -- expected=[1440, 900], actual=[1440, 900]
+[T0356] PASS Config JSON round trip: browser.windowSize -- [1440, 900]
+[T0357] PASS Config getter isolates mutable value: browser.windowSize
+[T0358] PASS Config default read: browser.slowMoMs -- expected=0, actual=0
+[T0359] PASS Config JSON round trip: browser.slowMoMs -- 0
+[T0360] PASS Config scalar read is stable: browser.slowMoMs
+[T0361] PASS Config default read: browser.extraArgs -- expected=[], actual=[]
+[T0362] PASS Config JSON round trip: browser.extraArgs -- []
+[T0363] PASS Config getter isolates mutable value: browser.extraArgs
+[T0364] PASS Config default read: browser.stealthFlags -- expected=True, actual=True
+[T0365] PASS Config JSON round trip: browser.stealthFlags -- true
+[T0366] PASS Config scalar read is stable: browser.stealthFlags
+[T0367] PASS Config default read: browser.waitTimeoutSec -- expected=300, actual=300
+[T0368] PASS Config JSON round trip: browser.waitTimeoutSec -- 300
+[T0369] PASS Config scalar read is stable: browser.waitTimeoutSec
+[T0370] PASS Config default read: browser.startRetries -- expected=3, actual=3
+[T0371] PASS Config JSON round trip: browser.startRetries -- 3
+[T0372] PASS Config scalar read is stable: browser.startRetries
+[T0373] PASS Config default read: browser.reloadOnCrashSec -- expected=30, actual=30
+[T0374] PASS Config JSON round trip: browser.reloadOnCrashSec -- 30
+[T0375] PASS Config scalar read is stable: browser.reloadOnCrashSec
+[T0376] PASS Config default read: server.enabled -- expected=True, actual=True
+[T0377] PASS Config JSON round trip: server.enabled -- true
+[T0378] PASS Config scalar read is stable: server.enabled
+[T0379] PASS Config default read: server.host -- expected='127.0.0.1', actual='127.0.0.1'
+[T0380] PASS Config JSON round trip: server.host -- "127.0.0.1"
+[T0381] PASS Config scalar read is stable: server.host
+[T0382] PASS Config default read: server.port -- expected=8765, actual=8765
+[T0383] PASS Config JSON round trip: server.port -- 8765
+[T0384] PASS Config scalar read is stable: server.port
+[T0385] PASS Config default read: server.openBrowser -- expected=True, actual=True
+[T0386] PASS Config JSON round trip: server.openBrowser -- true
+[T0387] PASS Config scalar read is stable: server.openBrowser
+[T0388] PASS Config default read: server.historyPoints -- expected=720, actual=720
+[T0389] PASS Config JSON round trip: server.historyPoints -- 720
+[T0390] PASS Config scalar read is stable: server.historyPoints
+[T0391] PASS Config default read: loop.pollMs -- expected=400, actual=400
+[T0392] PASS Config JSON round trip: loop.pollMs -- 400
+[T0393] PASS Config scalar read is stable: loop.pollMs
+[T0394] PASS Config default read: loop.snapshotMs -- expected=1000, actual=1000
+[T0395] PASS Config JSON round trip: loop.snapshotMs -- 1000
+[T0396] PASS Config scalar read is stable: loop.snapshotMs
+[T0397] PASS Config default read: loop.commandTimeoutSec -- expected=20, actual=20
+[T0398] PASS Config JSON round trip: loop.commandTimeoutSec -- 20
+[T0399] PASS Config scalar read is stable: loop.commandTimeoutSec
+[T0400] PASS Config default read: master -- expected=True, actual=True
+[T0401] PASS Config JSON round trip: master -- true
+[T0402] PASS Config scalar read is stable: master
+[T0403] PASS Config default read: clicker.enabled -- expected=True, actual=True
+[T0404] PASS Config JSON round trip: clicker.enabled -- true
+[T0405] PASS Config scalar read is stable: clicker.enabled
+[T0406] PASS Config default read: clicker.cps -- expected=12, actual=12
+[T0407] PASS Config JSON round trip: clicker.cps -- 12
+[T0408] PASS Config scalar read is stable: clicker.cps
+[T0409] PASS Config default read: clicker.direct -- expected=False, actual=False
+[T0410] PASS Config JSON round trip: clicker.direct -- false
+[T0411] PASS Config scalar read is stable: clicker.direct
+[T0412] PASS Config default read: clicker.boostOnFrenzy -- expected=True, actual=True
+[T0413] PASS Config JSON round trip: clicker.boostOnFrenzy -- true
+[T0414] PASS Config scalar read is stable: clicker.boostOnFrenzy
+[T0415] PASS Config default read: clicker.boostMult -- expected=3, actual=3
+[T0416] PASS Config JSON round trip: clicker.boostMult -- 3
+[T0417] PASS Config scalar read is stable: clicker.boostMult
+[T0418] PASS Config default read: clicker.maxPerTick -- expected=2, actual=2
+[T0419] PASS Config JSON round trip: clicker.maxPerTick -- 2
+[T0420] PASS Config scalar read is stable: clicker.maxPerTick
+[T0421] PASS Config default read: golden.enabled -- expected=True, actual=True
+[T0422] PASS Config JSON round trip: golden.enabled -- true
+[T0423] PASS Config scalar read is stable: golden.enabled
+[T0424] PASS Config default read: golden.popGolden -- expected=True, actual=True
+[T0425] PASS Config JSON round trip: golden.popGolden -- true
+[T0426] PASS Config scalar read is stable: golden.popGolden
+[T0427] PASS Config default read: golden.popWrath -- expected=True, actual=True
+[T0428] PASS Config JSON round trip: golden.popWrath -- true
+[T0429] PASS Config scalar read is stable: golden.popWrath
+[T0430] PASS Config default read: golden.popReindeer -- expected=True, actual=True
+[T0431] PASS Config JSON round trip: golden.popReindeer -- true
+[T0432] PASS Config scalar read is stable: golden.popReindeer
+[T0433] PASS Config default read: golden.popOthers -- expected=True, actual=True
+[T0434] PASS Config JSON round trip: golden.popOthers -- true
+[T0435] PASS Config scalar read is stable: golden.popOthers
+[T0436] PASS Config default read: golden.minLifeMs -- expected=0, actual=0
+[T0437] PASS Config JSON round trip: golden.minLifeMs -- 0
+[T0438] PASS Config scalar read is stable: golden.minLifeMs
+[T0439] PASS Config default read: wrinkler.enabled -- expected=True, actual=True
+[T0440] PASS Config JSON round trip: wrinkler.enabled -- true
+[T0441] PASS Config scalar read is stable: wrinkler.enabled
+[T0442] PASS Config default read: wrinkler.popShiny -- expected=True, actual=True
+[T0443] PASS Config JSON round trip: wrinkler.popShiny -- true
+[T0444] PASS Config scalar read is stable: wrinkler.popShiny
+[T0445] PASS Config default read: wrinkler.popAboveSucked -- expected=0, actual=0
+[T0446] PASS Config JSON round trip: wrinkler.popAboveSucked -- 0
+[T0447] PASS Config scalar read is stable: wrinkler.popAboveSucked
+[T0448] PASS Config default read: wrinkler.keep -- expected=10, actual=10
+[T0449] PASS Config JSON round trip: wrinkler.keep -- 10
+[T0450] PASS Config scalar read is stable: wrinkler.keep
+[T0451] PASS Config default read: upgrade.enabled -- expected=True, actual=True
+[T0452] PASS Config JSON round trip: upgrade.enabled -- true
+[T0453] PASS Config scalar read is stable: upgrade.enabled
+[T0454] PASS Config default read: upgrade.strategy -- expected='cheapest', actual='cheapest'
+[T0455] PASS Config JSON round trip: upgrade.strategy -- "cheapest"
+[T0456] PASS Config scalar read is stable: upgrade.strategy
+[T0457] PASS Config default read: upgrade.reserveCookies -- expected=0, actual=0
+[T0458] PASS Config JSON round trip: upgrade.reserveCookies -- 0
+[T0459] PASS Config scalar read is stable: upgrade.reserveCookies
+[T0460] PASS Config default read: upgrade.reserveRatio -- expected=0, actual=0
+[T0461] PASS Config JSON round trip: upgrade.reserveRatio -- 0
+[T0462] PASS Config scalar read is stable: upgrade.reserveRatio
+[T0463] PASS Config default read: upgrade.buyToggles -- expected=False, actual=False
+[T0464] PASS Config JSON round trip: upgrade.buyToggles -- false
+[T0465] PASS Config scalar read is stable: upgrade.buyToggles
+[T0466] PASS Config default read: upgrade.buyTech -- expected=True, actual=True
+[T0467] PASS Config JSON round trip: upgrade.buyTech -- true
+[T0468] PASS Config scalar read is stable: upgrade.buyTech
+[T0469] PASS Config default read: upgrade.buyLumpUpgrades -- expected=True, actual=True
+[T0470] PASS Config JSON round trip: upgrade.buyLumpUpgrades -- true
+[T0471] PASS Config scalar read is stable: upgrade.buyLumpUpgrades
+[T0472] PASS Config default read: upgrade.maxPerTick -- expected=8, actual=8
+[T0473] PASS Config JSON round trip: upgrade.maxPerTick -- 8
+[T0474] PASS Config scalar read is stable: upgrade.maxPerTick
+[T0475] PASS Config default read: upgrade.blacklist -- expected=[], actual=[]
+[T0476] PASS Config JSON round trip: upgrade.blacklist -- []
+[T0477] PASS Config getter isolates mutable value: upgrade.blacklist
+[T0478] PASS Config default read: upgrade.whitelist -- expected=[], actual=[]
+[T0479] PASS Config JSON round trip: upgrade.whitelist -- []
+[T0480] PASS Config getter isolates mutable value: upgrade.whitelist
+[T0481] PASS Config default read: upgrade.grandmapocalypse -- expected='ignore', actual='ignore'
+[T0482] PASS Config JSON round trip: upgrade.grandmapocalypse -- "ignore"
+[T0483] PASS Config scalar read is stable: upgrade.grandmapocalypse
+[T0484] PASS Config default read: building.enabled -- expected=True, actual=True
+[T0485] PASS Config JSON round trip: building.enabled -- true
+[T0486] PASS Config scalar read is stable: building.enabled
+[T0487] PASS Config default read: building.strategy -- expected='payback', actual='payback'
+[T0488] PASS Config JSON round trip: building.strategy -- "payback"
+[T0489] PASS Config scalar read is stable: building.strategy
+[T0490] PASS Config default read: building.reserveCookies -- expected=0, actual=0
+[T0491] PASS Config JSON round trip: building.reserveCookies -- 0
+[T0492] PASS Config scalar read is stable: building.reserveCookies
+[T0493] PASS Config default read: building.reserveRatio -- expected=0, actual=0
+[T0494] PASS Config JSON round trip: building.reserveRatio -- 0
+[T0495] PASS Config scalar read is stable: building.reserveRatio
+[T0496] PASS Config default read: building.maxPerTick -- expected=25, actual=25
+[T0497] PASS Config JSON round trip: building.maxPerTick -- 25
+[T0498] PASS Config scalar read is stable: building.maxPerTick
+[T0499] PASS Config default read: building.maxPaybackSec -- expected=0, actual=0
+[T0500] PASS Config JSON round trip: building.maxPaybackSec -- 0
+[T0501] PASS Config scalar read is stable: building.maxPaybackSec
+[T0502] PASS Config default read: building.ignore -- expected=[], actual=[]
+[T0503] PASS Config JSON round trip: building.ignore -- []
+[T0504] PASS Config getter isolates mutable value: building.ignore
+[T0505] PASS Config default read: building.measureEveryMs -- expected=1500, actual=1500
+[T0506] PASS Config JSON round trip: building.measureEveryMs -- 1500
+[T0507] PASS Config scalar read is stable: building.measureEveryMs
+[T0508] PASS Config default read: building.maxMeasure -- expected=10, actual=10
+[T0509] PASS Config JSON round trip: building.maxMeasure -- 10
+[T0510] PASS Config scalar read is stable: building.maxMeasure
+[T0511] PASS Config default read: lump.enabled -- expected=True, actual=True
+[T0512] PASS Config JSON round trip: lump.enabled -- true
+[T0513] PASS Config scalar read is stable: lump.enabled
+[T0514] PASS Config default read: lump.autoHarvest -- expected=True, actual=True
+[T0515] PASS Config JSON round trip: lump.autoHarvest -- true
+[T0516] PASS Config scalar read is stable: lump.autoHarvest
+[T0517] PASS Config default read: lump.autoLevel -- expected=True, actual=True
+[T0518] PASS Config JSON round trip: lump.autoLevel -- true
+[T0519] PASS Config scalar read is stable: lump.autoLevel
+[T0520] PASS Config default read: lump.reserve -- expected=0, actual=0
+[T0521] PASS Config JSON round trip: lump.reserve -- 0
+[T0522] PASS Config scalar read is stable: lump.reserve
+[T0523] PASS Config default read: lump.maxLevel -- expected=10, actual=10
+[T0524] PASS Config JSON round trip: lump.maxLevel -- 10
+[T0525] PASS Config scalar read is stable: lump.maxLevel
+[T0526] PASS Config default read: lump.priority -- expected=['Farm', 'Temple', 'Wizard tower', 'Bank', 'Cursor', 'Grandma', 'Mine', 'Factory', 'Shipment', 'Alchemy lab', 'Portal', 'Time machine', 'Antimatter condenser', 'Prism', 'Chancemaker', 'Fractal engine', 'Javascript console', 'Idleverse', 'Cortex baker', 'You'], actual=['Farm', 'Temple', 'Wizard tower', 'Bank', 'Cursor', 'Grandma', 'Mine', 'Factory', 'Shipment', 'Alchemy lab', 'Portal', 'Time machine', 'Antimatter condenser', 'Prism', 'Chancemaker', 'Fractal engine', 'Javascript console',
+[T0527] PASS Config JSON round trip: lump.priority -- ["Farm", "Temple", "Wizard tower", "Bank", "Cursor", "Grandma", "Mine", "Factory", "Shipment", "Alchemy lab", "Portal", "Time machine", "Antimatter condenser", "Prism", "Chancemake
+[T0528] PASS Config getter isolates mutable value: lump.priority
+[T0529] PASS Config default read: garden.enabled -- expected=True, actual=True
+[T0530] PASS Config JSON round trip: garden.enabled -- true
+[T0531] PASS Config scalar read is stable: garden.enabled
+[T0532] PASS Config default read: garden.mode -- expected='auto', actual='auto'
+[T0533] PASS Config JSON round trip: garden.mode -- "auto"
+[T0534] PASS Config scalar read is stable: garden.mode
+[T0535] PASS Config default read: garden.farmSeed -- expected='bakerWheat', actual='bakerWheat'
+[T0536] PASS Config JSON round trip: garden.farmSeed -- "bakerWheat"
+[T0537] PASS Config scalar read is stable: garden.farmSeed
+[T0538] PASS Config default read: garden.harvestMature -- expected=False, actual=False
+[T0539] PASS Config JSON round trip: garden.harvestMature -- false
+[T0540] PASS Config scalar read is stable: garden.harvestMature
+[T0541] PASS Config default read: garden.soil -- expected='auto', actual='auto'
+[T0542] PASS Config JSON round trip: garden.soil -- "auto"
+[T0543] PASS Config scalar read is stable: garden.soil
+[T0544] PASS Config default read: garden.unlockAll -- expected=True, actual=True
+[T0545] PASS Config JSON round trip: garden.unlockAll -- true
+[T0546] PASS Config scalar read is stable: garden.unlockAll
+[T0547] PASS Config default read: garden.lumpFarm -- expected=True, actual=True
+[T0548] PASS Config JSON round trip: garden.lumpFarm -- true
+[T0549] PASS Config scalar read is stable: garden.lumpFarm
+[T0550] PASS Config default read: garden.maxPlantPerTick -- expected=6, actual=6
+[T0551] PASS Config JSON round trip: garden.maxPlantPerTick -- 6
+[T0552] PASS Config scalar read is stable: garden.maxPlantPerTick
+[T0553] PASS Config default read: garden.weedControl -- expected=True, actual=True
+[T0554] PASS Config JSON round trip: garden.weedControl -- true
+[T0555] PASS Config scalar read is stable: garden.weedControl
+[T0556] PASS Config default read: garden.freezeWhenDone -- expected=False, actual=False
+[T0557] PASS Config JSON round trip: garden.freezeWhenDone -- false
+[T0558] PASS Config scalar read is stable: garden.freezeWhenDone
+[T0559] PASS Config default read: market.enabled -- expected=True, actual=True
+[T0560] PASS Config JSON round trip: market.enabled -- true
+[T0561] PASS Config scalar read is stable: market.enabled
+[T0562] PASS Config default read: market.strategy -- expected='swing', actual='swing'
+[T0563] PASS Config JSON round trip: market.strategy -- "swing"
+[T0564] PASS Config scalar read is stable: market.strategy
+[T0565] PASS Config default read: market.buyBelowRatio -- expected=0.8, actual=0.8
+[T0566] PASS Config JSON round trip: market.buyBelowRatio -- 0.8
+[T0567] PASS Config scalar read is stable: market.buyBelowRatio
+[T0568] PASS Config default read: market.sellAboveRatio -- expected=1.35, actual=1.35
+[T0569] PASS Config JSON round trip: market.sellAboveRatio -- 1.35
+[T0570] PASS Config scalar read is stable: market.sellAboveRatio
+[T0571] PASS Config default read: market.momentum -- expected=True, actual=True
+[T0572] PASS Config JSON round trip: market.momentum -- true
+[T0573] PASS Config scalar read is stable: market.momentum
+[T0574] PASS Config default read: market.spendRatio -- expected=0.6, actual=0.6
+[T0575] PASS Config JSON round trip: market.spendRatio -- 0.6
+[T0576] PASS Config scalar read is stable: market.spendRatio
+[T0577] PASS Config default read: market.minProfitCpsSec -- expected=60, actual=60
+[T0578] PASS Config JSON round trip: market.minProfitCpsSec -- 60
+[T0579] PASS Config scalar read is stable: market.minProfitCpsSec
+[T0580] PASS Config default read: market.stopLossRatio -- expected=0.55, actual=0.55
+[T0581] PASS Config JSON round trip: market.stopLossRatio -- 0.55
+[T0582] PASS Config scalar read is stable: market.stopLossRatio
+[T0583] PASS Config default read: market.minProfitRatio -- expected=0.25, actual=0.25
+[T0584] PASS Config JSON round trip: market.minProfitRatio -- 0.25
+[T0585] PASS Config scalar read is stable: market.minProfitRatio
+[T0586] PASS Config default read: market.partialSellRatio -- expected=1.0, actual=1.0
+[T0587] PASS Config JSON round trip: market.partialSellRatio -- 1.0
+[T0588] PASS Config scalar read is stable: market.partialSellRatio
+[T0589] PASS Config default read: market.maxStockRatio -- expected=1.0, actual=1.0
+[T0590] PASS Config JSON round trip: market.maxStockRatio -- 1.0
+[T0591] PASS Config scalar read is stable: market.maxStockRatio
+[T0592] PASS Config default read: market.maxBuyPerTick -- expected=500, actual=500
+[T0593] PASS Config JSON round trip: market.maxBuyPerTick -- 500
+[T0594] PASS Config scalar read is stable: market.maxBuyPerTick
+[T0595] PASS Config default read: market.minBuyQty -- expected=1, actual=1
+[T0596] PASS Config JSON round trip: market.minBuyQty -- 1
+[T0597] PASS Config scalar read is stable: market.minBuyQty
+[T0598] PASS Config default read: market.tradeHidden -- expected=False, actual=False
+[T0599] PASS Config JSON round trip: market.tradeHidden -- false
+[T0600] PASS Config scalar read is stable: market.tradeHidden
+[T0601] PASS Config default read: market.autoBrokers -- expected=True, actual=True
+[T0602] PASS Config JSON round trip: market.autoBrokers -- true
+[T0603] PASS Config scalar read is stable: market.autoBrokers
+[T0604] PASS Config default read: market.brokerReserveMult -- expected=1.5, actual=1.5
+[T0605] PASS Config JSON round trip: market.brokerReserveMult -- 1.5
+[T0606] PASS Config scalar read is stable: market.brokerReserveMult
+[T0607] PASS Config default read: market.autoOffice -- expected=True, actual=True
+[T0608] PASS Config JSON round trip: market.autoOffice -- true
+[T0609] PASS Config scalar read is stable: market.autoOffice
+[T0610] PASS Config default read: market.useLoans -- expected=False, actual=False
+[T0611] PASS Config JSON round trip: market.useLoans -- false
+[T0612] PASS Config scalar read is stable: market.useLoans
+[T0613] PASS Config default read: market.goods -- expected={}, actual={}
+[T0614] PASS Config JSON round trip: market.goods -- {}
+[T0615] PASS Config getter isolates mutable value: market.goods
+[T0616] PASS Config default read: grimoire.enabled -- expected=True, actual=True
+[T0617] PASS Config JSON round trip: grimoire.enabled -- true
+[T0618] PASS Config scalar read is stable: grimoire.enabled
+[T0619] PASS Config default read: grimoire.spells -- expected=['conjure baked goods', 'hand of fate'], actual=['conjure baked goods', 'hand of fate']
+[T0620] PASS Config JSON round trip: grimoire.spells -- ["conjure baked goods", "hand of fate"]
+[T0621] PASS Config getter isolates mutable value: grimoire.spells
+[T0622] PASS Config default read: grimoire.minMagicRatio -- expected=1.0, actual=1.0
+[T0623] PASS Config JSON round trip: grimoire.minMagicRatio -- 1.0
+[T0624] PASS Config scalar read is stable: grimoire.minMagicRatio
+[T0625] PASS Config default read: grimoire.reserve -- expected=0, actual=0
+[T0626] PASS Config JSON round trip: grimoire.reserve -- 0
+[T0627] PASS Config scalar read is stable: grimoire.reserve
+[T0628] PASS Config default read: grimoire.allowBackfire -- expected=False, actual=False
+[T0629] PASS Config JSON round trip: grimoire.allowBackfire -- false
+[T0630] PASS Config scalar read is stable: grimoire.allowBackfire
+[T0631] PASS Config default read: pantheon.enabled -- expected=True, actual=True
+[T0632] PASS Config JSON round trip: pantheon.enabled -- true
+[T0633] PASS Config scalar read is stable: pantheon.enabled
+[T0634] PASS Config default read: pantheon.autoSlot -- expected=True, actual=True
+[T0635] PASS Config JSON round trip: pantheon.autoSlot -- true
+[T0636] PASS Config scalar read is stable: pantheon.autoSlot
+[T0637] PASS Config default read: pantheon.loadout -- expected=['creation', 'scorn', 'order'], actual=['creation', 'scorn', 'order']
+[T0638] PASS Config JSON round trip: pantheon.loadout -- ["creation", "scorn", "order"]
+[T0639] PASS Config getter isolates mutable value: pantheon.loadout
+[T0640] PASS Config default read: pantheon.respectSwaps -- expected=True, actual=True
+[T0641] PASS Config JSON round trip: pantheon.respectSwaps -- true
+[T0642] PASS Config scalar read is stable: pantheon.respectSwaps
+[T0643] PASS Config default read: dragon.enabled -- expected=True, actual=True
+[T0644] PASS Config JSON round trip: dragon.enabled -- true
+[T0645] PASS Config scalar read is stable: dragon.enabled
+[T0646] PASS Config default read: dragon.autoTrain -- expected=True, actual=True
+[T0647] PASS Config JSON round trip: dragon.autoTrain -- true
+[T0648] PASS Config scalar read is stable: dragon.autoTrain
+[T0649] PASS Config default read: dragon.aura1 -- expected='Dragon God', actual='Dragon God'
+[T0650] PASS Config JSON round trip: dragon.aura1 -- "Dragon God"
+[T0651] PASS Config scalar read is stable: dragon.aura1
+[T0652] PASS Config default read: dragon.aura2 -- expected='Reality Bending', actual='Reality Bending'
+[T0653] PASS Config JSON round trip: dragon.aura2 -- "Reality Bending"
+[T0654] PASS Config scalar read is stable: dragon.aura2
+[T0655] PASS Config default read: santa.enabled -- expected=True, actual=True
+[T0656] PASS Config JSON round trip: santa.enabled -- true
+[T0657] PASS Config scalar read is stable: santa.enabled
+[T0658] PASS Config default read: santa.autoUpgrade -- expected=True, actual=True
+[T0659] PASS Config JSON round trip: santa.autoUpgrade -- true
+[T0660] PASS Config scalar read is stable: santa.autoUpgrade
+[T0661] PASS Config default read: santa.maxLevel -- expected=14, actual=14
+[T0662] PASS Config JSON round trip: santa.maxLevel -- 14
+[T0663] PASS Config scalar read is stable: santa.maxLevel
+[T0664] PASS Config default read: santa.maxCostRatio -- expected=1.0, actual=1.0
+[T0665] PASS Config JSON round trip: santa.maxCostRatio -- 1.0
+[T0666] PASS Config scalar read is stable: santa.maxCostRatio
+[T0667] PASS Config default read: season.enabled -- expected=False, actual=False
+[T0668] PASS Config JSON round trip: season.enabled -- false
+[T0669] PASS Config scalar read is stable: season.enabled
+[T0670] PASS Config default read: season.preferred -- expected='', actual=''
+[T0671] PASS Config JSON round trip: season.preferred -- ""
+[T0672] PASS Config scalar read is stable: season.preferred
+[T0673] PASS Config default read: season.maxCostRatio -- expected=0.02, actual=0.02
+[T0674] PASS Config JSON round trip: season.maxCostRatio -- 0.02
+[T0675] PASS Config scalar read is stable: season.maxCostRatio
+[T0676] PASS Config default read: season.autoSwitch -- expected=False, actual=False
+[T0677] PASS Config JSON round trip: season.autoSwitch -- false
+[T0678] PASS Config scalar read is stable: season.autoSwitch
+[T0679] PASS Config default read: ascend.enabled -- expected=True, actual=True
+[T0680] PASS Config JSON round trip: ascend.enabled -- true
+[T0681] PASS Config scalar read is stable: ascend.enabled
+[T0682] PASS Config default read: ascend.mode -- expected='percent', actual='percent'
+[T0683] PASS Config JSON round trip: ascend.mode -- "percent"
+[T0684] PASS Config scalar read is stable: ascend.mode
+[T0685] PASS Config default read: ascend.percent -- expected=50, actual=50
+[T0686] PASS Config JSON round trip: ascend.percent -- 50
+[T0687] PASS Config scalar read is stable: ascend.percent
+[T0688] PASS Config default read: ascend.minGain -- expected=1, actual=1
+[T0689] PASS Config JSON round trip: ascend.minGain -- 1
+[T0690] PASS Config scalar read is stable: ascend.minGain
+[T0691] PASS Config default read: ascend.minAbsolutePrestige -- expected=0, actual=0
+[T0692] PASS Config JSON round trip: ascend.minAbsolutePrestige -- 0
+[T0693] PASS Config scalar read is stable: ascend.minAbsolutePrestige
+[T0694] PASS Config default read: ascend.cooldownSec -- expected=0, actual=0
+[T0695] PASS Config JSON round trip: ascend.cooldownSec -- 0
+[T0696] PASS Config scalar read is stable: ascend.cooldownSec
+[T0697] PASS Config default read: ascend.maxPerDay -- expected=0, actual=0
+[T0698] PASS Config JSON round trip: ascend.maxPerDay -- 0
+[T0699] PASS Config scalar read is stable: ascend.maxPerDay
+[T0700] PASS Config default read: ascend.backupFirst -- expected=True, actual=True
+[T0701] PASS Config JSON round trip: ascend.backupFirst -- true
+[T0702] PASS Config scalar read is stable: ascend.backupFirst
+[T0703] PASS Config default read: ascend.backupTimeoutSec -- expected=60, actual=60
+[T0704] PASS Config JSON round trip: ascend.backupTimeoutSec -- 60
+[T0705] PASS Config scalar read is stable: ascend.backupTimeoutSec
+[T0706] PASS Config default read: ascend.autoReincarnate -- expected=True, actual=True
+[T0707] PASS Config JSON round trip: ascend.autoReincarnate -- true
+[T0708] PASS Config scalar read is stable: ascend.autoReincarnate
+[T0709] PASS Config default read: ascend.reincarnateDelaySec -- expected=3, actual=3
+[T0710] PASS Config JSON round trip: ascend.reincarnateDelaySec -- 3
+[T0711] PASS Config scalar read is stable: ascend.reincarnateDelaySec
+[T0712] PASS Config default read: ascend.prestigeOnAscend -- expected=True, actual=True
+[T0713] PASS Config JSON round trip: ascend.prestigeOnAscend -- true
+[T0714] PASS Config scalar read is stable: ascend.prestigeOnAscend
+[T0715] PASS Config default read: ascend.challengeMode -- expected=0, actual=0
+[T0716] PASS Config JSON round trip: ascend.challengeMode -- 0
+[T0717] PASS Config scalar read is stable: ascend.challengeMode
+[T0718] PASS Config default read: prestige.enabled -- expected=True, actual=True
+[T0719] PASS Config JSON round trip: prestige.enabled -- true
+[T0720] PASS Config scalar read is stable: prestige.enabled
+[T0721] PASS Config default read: prestige.strategy -- expected='priority', actual='priority'
+[T0722] PASS Config JSON round trip: prestige.strategy -- "priority"
+[T0723] PASS Config scalar read is stable: prestige.strategy
+[T0724] PASS Config default read: prestige.reserveChips -- expected=0, actual=0
+[T0725] PASS Config JSON round trip: prestige.reserveChips -- 0
+[T0726] PASS Config scalar read is stable: prestige.reserveChips
+[T0727] PASS Config default read: prestige.maxPerTick -- expected=12, actual=12
+[T0728] PASS Config JSON round trip: prestige.maxPerTick -- 12
+[T0729] PASS Config scalar read is stable: prestige.maxPerTick
+[T0730] PASS Config default read: prestige.blacklist -- expected=[], actual=[]
+[T0731] PASS Config JSON round trip: prestige.blacklist -- []
+[T0732] PASS Config getter isolates mutable value: prestige.blacklist
+[T0733] PASS Config default read: prestige.permanentUpgrades -- expected=[], actual=[]
+[T0734] PASS Config JSON round trip: prestige.permanentUpgrades -- []
+[T0735] PASS Config getter isolates mutable value: prestige.permanentUpgrades
+[T0736] PASS Config default read: prestige.autoAssignPermanent -- expected=True, actual=True
+[T0737] PASS Config JSON round trip: prestige.autoAssignPermanent -- true
+[T0738] PASS Config scalar read is stable: prestige.autoAssignPermanent
+[T0739] PASS Config default read: prestige.priorityList -- expected=[], actual=[]
+[T0740] PASS Config JSON round trip: prestige.priorityList -- []
+[T0741] PASS Config getter isolates mutable value: prestige.priorityList
+[T0742] PASS Config default read: housekeep.enabled -- expected=True, actual=True
+[T0743] PASS Config JSON round trip: housekeep.enabled -- true
+[T0744] PASS Config scalar read is stable: housekeep.enabled
+[T0745] PASS Config default read: housekeep.closePrompts -- expected=True, actual=True
+[T0746] PASS Config JSON round trip: housekeep.closePrompts -- true
+[T0747] PASS Config scalar read is stable: housekeep.closePrompts
+[T0748] PASS Config default read: housekeep.muteSound -- expected=True, actual=True
+[T0749] PASS Config JSON round trip: housekeep.muteSound -- true
+[T0750] PASS Config scalar read is stable: housekeep.muteSound
+[T0751] PASS Config default read: housekeep.muteMusic -- expected=True, actual=True
+[T0752] PASS Config JSON round trip: housekeep.muteMusic -- true
+[T0753] PASS Config scalar read is stable: housekeep.muteMusic
+[T0754] PASS Config default read: housekeep.reduceParticles -- expected=True, actual=True
+[T0755] PASS Config JSON round trip: housekeep.reduceParticles -- true
+[T0756] PASS Config scalar read is stable: housekeep.reduceParticles
+[T0757] PASS Config default read: housekeep.keepAwake -- expected=True, actual=True
+[T0758] PASS Config JSON round trip: housekeep.keepAwake -- true
+[T0759] PASS Config scalar read is stable: housekeep.keepAwake
+[T0760] PASS Config default read: housekeep.autoResume -- expected=True, actual=True
+[T0761] PASS Config JSON round trip: housekeep.autoResume -- true
+[T0762] PASS Config scalar read is stable: housekeep.autoResume
+[T0763] PASS Config default read: housekeep.autosaveSec -- expected=60, actual=60
+[T0764] PASS Config JSON round trip: housekeep.autosaveSec -- 60
+[T0765] PASS Config scalar read is stable: housekeep.autosaveSec
+[T0766] PASS Config default read: save.enabled -- expected=True, actual=True
+[T0767] PASS Config JSON round trip: save.enabled -- true
+[T0768] PASS Config scalar read is stable: save.enabled
+[T0769] PASS Config default read: save.backupEverySec -- expected=900, actual=900
+[T0770] PASS Config JSON round trip: save.backupEverySec -- 900
+[T0771] PASS Config scalar read is stable: save.backupEverySec
+[T0772] PASS Config default read: save.backupOnAscend -- expected=True, actual=True
+[T0773] PASS Config JSON round trip: save.backupOnAscend -- true
+[T0774] PASS Config scalar read is stable: save.backupOnAscend
+[T0775] PASS Config default read: save.backupOnExit -- expected=True, actual=True
+[T0776] PASS Config JSON round trip: save.backupOnExit -- true
+[T0777] PASS Config scalar read is stable: save.backupOnExit
+[T0778] PASS Config default read: save.keepBackups -- expected=60, actual=60
+[T0779] PASS Config JSON round trip: save.keepBackups -- 60
+[T0780] PASS Config scalar read is stable: save.keepBackups
+[T0781] PASS Config default read: logging.level -- expected='INFO', actual='INFO'
+[T0782] PASS Config JSON round trip: logging.level -- "INFO"
+[T0783] PASS Config scalar read is stable: logging.level
+[T0784] PASS Config default read: logging.console -- expected=True, actual=True
+[T0785] PASS Config JSON round trip: logging.console -- true
+[T0786] PASS Config scalar read is stable: logging.console
+[T0787] PASS Config default read: logging.mainLogMaxBytes -- expected=8388608, actual=8388608
+[T0788] PASS Config JSON round trip: logging.mainLogMaxBytes -- 8388608
+[T0789] PASS Config scalar read is stable: logging.mainLogMaxBytes
+[T0790] PASS Config default read: logging.mainLogBackups -- expected=6, actual=6
+[T0791] PASS Config JSON round trip: logging.mainLogBackups -- 6
+[T0792] PASS Config scalar read is stable: logging.mainLogBackups
+[T0793] PASS Config default read: logging.actionJsonl -- expected=True, actual=True
+[T0794] PASS Config JSON round trip: logging.actionJsonl -- true
+[T0795] PASS Config scalar read is stable: logging.actionJsonl
+[T0796] PASS Config default read: logging.actionText -- expected=True, actual=True
+[T0797] PASS Config JSON round trip: logging.actionText -- true
+[T0798] PASS Config scalar read is stable: logging.actionText
+[T0799] PASS Config default read: logging.statsEverySec -- expected=60, actual=60
+[T0800] PASS Config JSON round trip: logging.statsEverySec -- 60
+[T0801] PASS Config scalar read is stable: logging.statsEverySec
+[T0802] PASS Config default read: logging.ringBuffer -- expected=3000, actual=3000
+[T0803] PASS Config JSON round trip: logging.ringBuffer -- 3000
+[T0804] PASS Config scalar read is stable: logging.ringBuffer
+[T0805] PASS Config default read: logging.logConsoleEvents -- expected=True, actual=True
+[T0806] PASS Config JSON round trip: logging.logConsoleEvents -- true
+[T0807] PASS Config scalar read is stable: logging.logConsoleEvents
+[T0808] PASS Config default read: logging.keepDays -- expected=30, actual=30
+[T0809] PASS Config JSON round trip: logging.keepDays -- 30
+[T0810] PASS Config scalar read is stable: logging.keepDays
+[T0811] PASS Temporary config persisted to disk
+[T0812] PASS Temporary config is UTF-8 without BOM
+[T0813] PASS Config persisted/reloaded: browser.url
+[T0814] PASS Config persisted/reloaded: browser.headless
+[T0815] PASS Config persisted/reloaded: browser.channel
+[T0816] PASS Config persisted/reloaded: browser.userDataDir
+[T0817] PASS Config persisted/reloaded: browser.windowSize
+[T0818] PASS Config persisted/reloaded: browser.slowMoMs
+[T0819] PASS Config persisted/reloaded: browser.extraArgs
+[T0820] PASS Config persisted/reloaded: browser.stealthFlags
+[T0821] PASS Config persisted/reloaded: browser.waitTimeoutSec
+[T0822] PASS Config persisted/reloaded: browser.startRetries
+[T0823] PASS Config persisted/reloaded: browser.reloadOnCrashSec
+[T0824] PASS Config persisted/reloaded: server.enabled
+[T0825] PASS Config persisted/reloaded: server.host
+[T0826] PASS Config persisted/reloaded: server.port
+[T0827] PASS Config persisted/reloaded: server.openBrowser
+[T0828] PASS Config persisted/reloaded: server.historyPoints
+[T0829] PASS Config persisted/reloaded: loop.pollMs
+[T0830] PASS Config persisted/reloaded: loop.snapshotMs
+[T0831] PASS Config persisted/reloaded: loop.commandTimeoutSec
+[T0832] PASS Config persisted/reloaded: master
+[T0833] PASS Config persisted/reloaded: clicker.enabled
+[T0834] PASS Config persisted/reloaded: clicker.cps
+[T0835] PASS Config persisted/reloaded: clicker.direct
+[T0836] PASS Config persisted/reloaded: clicker.boostOnFrenzy
+[T0837] PASS Config persisted/reloaded: clicker.boostMult
+[T0838] PASS Config persisted/reloaded: clicker.maxPerTick
+[T0839] PASS Config persisted/reloaded: golden.enabled
+[T0840] PASS Config persisted/reloaded: golden.popGolden
+[T0841] PASS Config persisted/reloaded: golden.popWrath
+[T0842] PASS Config persisted/reloaded: golden.popReindeer
+[T0843] PASS Config persisted/reloaded: golden.popOthers
+[T0844] PASS Config persisted/reloaded: golden.minLifeMs
+[T0845] PASS Config persisted/reloaded: wrinkler.enabled
+[T0846] PASS Config persisted/reloaded: wrinkler.popShiny
+[T0847] PASS Config persisted/reloaded: wrinkler.popAboveSucked
+[T0848] PASS Config persisted/reloaded: wrinkler.keep
+[T0849] PASS Config persisted/reloaded: upgrade.enabled
+[T0850] PASS Config persisted/reloaded: upgrade.strategy
+[T0851] PASS Config persisted/reloaded: upgrade.reserveCookies
+[T0852] PASS Config persisted/reloaded: upgrade.reserveRatio
+[T0853] PASS Config persisted/reloaded: upgrade.buyToggles
+[T0854] PASS Config persisted/reloaded: upgrade.buyTech
+[T0855] PASS Config persisted/reloaded: upgrade.buyLumpUpgrades
+[T0856] PASS Config persisted/reloaded: upgrade.maxPerTick
+[T0857] PASS Config persisted/reloaded: upgrade.blacklist
+[T0858] PASS Config persisted/reloaded: upgrade.whitelist
+[T0859] PASS Config persisted/reloaded: upgrade.grandmapocalypse
+[T0860] PASS Config persisted/reloaded: building.enabled
+[T0861] PASS Config persisted/reloaded: building.strategy
+[T0862] PASS Config persisted/reloaded: building.reserveCookies
+[T0863] PASS Config persisted/reloaded: building.reserveRatio
+[T0864] PASS Config persisted/reloaded: building.maxPerTick
+[T0865] PASS Config persisted/reloaded: building.maxPaybackSec
+[T0866] PASS Config persisted/reloaded: building.ignore
+[T0867] PASS Config persisted/reloaded: building.measureEveryMs
+[T0868] PASS Config persisted/reloaded: building.maxMeasure
+[T0869] PASS Config persisted/reloaded: lump.enabled
+[T0870] PASS Config persisted/reloaded: lump.autoHarvest
+[T0871] PASS Config persisted/reloaded: lump.autoLevel
+[T0872] PASS Config persisted/reloaded: lump.reserve
+[T0873] PASS Config persisted/reloaded: lump.maxLevel
+[T0874] PASS Config persisted/reloaded: lump.priority
+[T0875] PASS Config persisted/reloaded: garden.enabled
+[T0876] PASS Config persisted/reloaded: garden.mode
+[T0877] PASS Config persisted/reloaded: garden.farmSeed
+[T0878] PASS Config persisted/reloaded: garden.harvestMature
+[T0879] PASS Config persisted/reloaded: garden.soil
+[T0880] PASS Config persisted/reloaded: garden.unlockAll
+[T0881] PASS Config persisted/reloaded: garden.lumpFarm
+[T0882] PASS Config persisted/reloaded: garden.maxPlantPerTick
+[T0883] PASS Config persisted/reloaded: garden.weedControl
+[T0884] PASS Config persisted/reloaded: garden.freezeWhenDone
+[T0885] PASS Config persisted/reloaded: market.enabled
+[T0886] PASS Config persisted/reloaded: market.strategy
+[T0887] PASS Config persisted/reloaded: market.buyBelowRatio
+[T0888] PASS Config persisted/reloaded: market.sellAboveRatio
+[T0889] PASS Config persisted/reloaded: market.momentum
+[T0890] PASS Config persisted/reloaded: market.spendRatio
+[T0891] PASS Config persisted/reloaded: market.minProfitCpsSec
+[T0892] PASS Config persisted/reloaded: market.stopLossRatio
+[T0893] PASS Config persisted/reloaded: market.minProfitRatio
+[T0894] PASS Config persisted/reloaded: market.partialSellRatio
+[T0895] PASS Config persisted/reloaded: market.maxStockRatio
+[T0896] PASS Config persisted/reloaded: market.maxBuyPerTick
+[T0897] PASS Config persisted/reloaded: market.minBuyQty
+[T0898] PASS Config persisted/reloaded: market.tradeHidden
+[T0899] PASS Config persisted/reloaded: market.autoBrokers
+[T0900] PASS Config persisted/reloaded: market.brokerReserveMult
+[T0901] PASS Config persisted/reloaded: market.autoOffice
+[T0902] PASS Config persisted/reloaded: market.useLoans
+[T0903] PASS Config persisted/reloaded: market.goods
+[T0904] PASS Config persisted/reloaded: grimoire.enabled
+[T0905] PASS Config persisted/reloaded: grimoire.spells
+[T0906] PASS Config persisted/reloaded: grimoire.minMagicRatio
+[T0907] PASS Config persisted/reloaded: grimoire.reserve
+[T0908] PASS Config persisted/reloaded: grimoire.allowBackfire
+[T0909] PASS Config persisted/reloaded: pantheon.enabled
+[T0910] PASS Config persisted/reloaded: pantheon.autoSlot
+[T0911] PASS Config persisted/reloaded: pantheon.loadout
+[T0912] PASS Config persisted/reloaded: pantheon.respectSwaps
+[T0913] PASS Config persisted/reloaded: dragon.enabled
+[T0914] PASS Config persisted/reloaded: dragon.autoTrain
+[T0915] PASS Config persisted/reloaded: dragon.aura1
+[T0916] PASS Config persisted/reloaded: dragon.aura2
+[T0917] PASS Config persisted/reloaded: santa.enabled
+[T0918] PASS Config persisted/reloaded: santa.autoUpgrade
+[T0919] PASS Config persisted/reloaded: santa.maxLevel
+[T0920] PASS Config persisted/reloaded: santa.maxCostRatio
+[T0921] PASS Config persisted/reloaded: season.enabled
+[T0922] PASS Config persisted/reloaded: season.preferred
+[T0923] PASS Config persisted/reloaded: season.maxCostRatio
+[T0924] PASS Config persisted/reloaded: season.autoSwitch
+[T0925] PASS Config persisted/reloaded: ascend.enabled
+[T0926] PASS Config persisted/reloaded: ascend.mode
+[T0927] PASS Config persisted/reloaded: ascend.percent
+[T0928] PASS Config persisted/reloaded: ascend.minGain
+[T0929] PASS Config persisted/reloaded: ascend.minAbsolutePrestige
+[T0930] PASS Config persisted/reloaded: ascend.cooldownSec
+[T0931] PASS Config persisted/reloaded: ascend.maxPerDay
+[T0932] PASS Config persisted/reloaded: ascend.backupFirst
+[T0933] PASS Config persisted/reloaded: ascend.backupTimeoutSec
+[T0934] PASS Config persisted/reloaded: ascend.autoReincarnate
+[T0935] PASS Config persisted/reloaded: ascend.reincarnateDelaySec
+[T0936] PASS Config persisted/reloaded: ascend.prestigeOnAscend
+[T0937] PASS Config persisted/reloaded: ascend.challengeMode
+[T0938] PASS Config persisted/reloaded: prestige.enabled
+[T0939] PASS Config persisted/reloaded: prestige.strategy
+[T0940] PASS Config persisted/reloaded: prestige.reserveChips
+[T0941] PASS Config persisted/reloaded: prestige.maxPerTick
+[T0942] PASS Config persisted/reloaded: prestige.blacklist
+[T0943] PASS Config persisted/reloaded: prestige.permanentUpgrades
+[T0944] PASS Config persisted/reloaded: prestige.autoAssignPermanent
+[T0945] PASS Config persisted/reloaded: prestige.priorityList
+[T0946] PASS Config persisted/reloaded: housekeep.enabled
+[T0947] PASS Config persisted/reloaded: housekeep.closePrompts
+[T0948] PASS Config persisted/reloaded: housekeep.muteSound
+[T0949] PASS Config persisted/reloaded: housekeep.muteMusic
+[T0950] PASS Config persisted/reloaded: housekeep.reduceParticles
+[T0951] PASS Config persisted/reloaded: housekeep.keepAwake
+[T0952] PASS Config persisted/reloaded: housekeep.autoResume
+[T0953] PASS Config persisted/reloaded: housekeep.autosaveSec
+[T0954] PASS Config persisted/reloaded: save.enabled
+[T0955] PASS Config persisted/reloaded: save.backupEverySec
+[T0956] PASS Config persisted/reloaded: save.backupOnAscend
+[T0957] PASS Config persisted/reloaded: save.backupOnExit
+[T0958] PASS Config persisted/reloaded: save.keepBackups
+[T0959] PASS Config persisted/reloaded: logging.level
+[T0960] PASS Config persisted/reloaded: logging.console
+[T0961] PASS Config persisted/reloaded: logging.mainLogMaxBytes
+[T0962] PASS Config persisted/reloaded: logging.mainLogBackups
+[T0963] PASS Config persisted/reloaded: logging.actionJsonl
+[T0964] PASS Config persisted/reloaded: logging.actionText
+[T0965] PASS Config persisted/reloaded: logging.statsEverySec
+[T0966] PASS Config persisted/reloaded: logging.ringBuffer
+[T0967] PASS Config persisted/reloaded: logging.logConsoleEvents
+[T0968] PASS Config persisted/reloaded: logging.keepDays
+[T0969] PASS Full default config survives save/load
+[T0970] PASS Partial update changes requested leaf
+[T0971] PASS Partial update preserves sibling keys
+[T0972] PASS Second module update persists
+[T0973] PASS Partial update preserves untouched modules
+[T0974] PASS Dotted-path set updates leaf
+[T0975] PASS Dotted-path set preserves sibling
+[T0976] PASS Config.data returns a defensive copy
+[T0977] PASS Unknown key returns caller default
+[T0978] PASS Engine config excludes browser secrets/settings
+[T0979] PASS Engine config excludes local server settings
+[T0980] PASS Engine config excludes logging settings
+[T0981] PASS Engine config excludes save-manager settings
+[T0982] PASS Engine config key contract matches ENGINE_KEYS
+[T0983] PASS Every module key has config defaults
+[T0984] PASS Module config keys are unique
+[T0985] PASS Reset restores complete defaults
+[T0986] PASS Reset persists default config
+[T0987] PASS deep_merge handles empty destination
+[T0988] PASS deep_merge preserves untouched nested keys
+[T0989] PASS deep_merge copies incoming list data
+=== 07 / SaveManager isolation, retention, and path safety | PASS 37 FAIL 0 WARN 0 SKIP 0 ===
+[T0990] PASS SaveManager retains requested count
+[T0991] PASS Empty save code is rejected
+[T0992] PASS Empty save creates no save file
+[T0993] PASS Save write creates file
+[T0994] PASS Save read returns exact ASCII code
+[T0995] PASS Latest points to first save
+[T0996] PASS List contains one saved file
+[T0997] PASS List returns the file name
+[T0998] PASS List reports byte size
+[T0999] PASS List provides formatted timestamp
+[T1000] PASS List extracts tag
+[T1001] PASS Multiple test saves can be written
+[T1002] PASS Retention prunes save count to keep=3
+[T1003] PASS Oldest save is pruned
+[T1004] PASS Latest remains a retained save
+[T1005] PASS Delete succeeds for existing save
+[T1006] PASS Deleted save is absent
+[T1007] PASS Delete missing save returns false
+[T1008] PASS Reading missing save raises safe exception
+[T1009] PASS Unsafe/missing save name is rejected: '../config.json'
+[T1010] PASS Unsafe/missing save name is rejected: '..\\config.json'
+[T1011] PASS Unsafe/missing save name is rejected: '..'
+[T1012] PASS Unsafe/missing save name is rejected: ''
+[T1013] PASS Unsafe/missing save name is rejected: '../../Windows/win.ini'
+[T1014] PASS Unsafe/missing save name is rejected: 'C:\\Windows\\win.ini'
+[T1015] PASS Unsafe/missing save name is rejected: '/etc/passwd'
+[T1016] PASS Unsafe/missing save name is rejected: 'folder/../../config.json'
+[T1017] PASS Legitimate save names remain readable
+[T1018] PASS Sanitized safe name has no slash
+[T1019] PASS Sanitized safe name has no backslash
+[T1020] PASS Save names are bounded to 80 characters
+[T1021] PASS Save write handles non-ASCII code with defined fallback
+[T1022] PASS Non-ASCII save bytes use explicit replacement
+[T1023] PASS Backup metadata JSONL is created
+[T1024] PASS Backup metadata is valid JSONL
+[T1025] PASS Empty sanitized tag falls back to auto
+[T1026] PASS Manual prune returns non-negative count
+=== 08 / Logging formats, filtering, and temporary paths | PASS 29 FAIL 0 WARN 0 SKIP 0 ===
+[T1027] PASS Action log preserves module
+[T1028] PASS Action log preserves action
+[T1029] PASS Action log preserves details
+[T1030] PASS Human-readable log localizes module
+[T1031] PASS Human-readable log localizes action
+[T1032] PASS Action log tail returns new record
+[T1033] PASS Action log filters by module
+[T1034] PASS Action log excludes other module
+[T1035] PASS Action log searches detail text
+[T1036] PASS Action log returns empty result for missing text
+[T1037] PASS Action log honors tail limit
+[T1038] PASS Action log accepts a batch
+[T1039] PASS Action log batch extends ring
+[T1040] PASS Action ring buffer has bounded max size
+[T1041] PASS Action tail newest-first
+[T1042] PASS Action JSONL file created
+[T1043] PASS Action text file created
+[T1044] PASS Action JSONL contains rows
+[T1045] PASS Action JSONL has required schema
+[T1046] PASS Text log contains localized action
+[T1047] PASS Stats logger keeps in-memory history
+[T1048] PASS Stats history stores most recent snapshot
+[T1049] PASS Stats JSONL file created
+[T1050] PASS Stats file has both rows
+[T1051] PASS Stats row contains cookies per second
+[T1052] PASS Stats row contains prestige value
+[T1053] PASS log_files lists action logs
+[T1054] PASS log_files lists stats logs
+[T1055] PASS Log reader rejects path traversal
+=== 09 / Engine, game hooks, and lifecycle regression markers | PASS 56 FAIL 0 WARN 0 SKIP 0 ===
+[T1056] PASS Engine supports stop requests -- required marker: request_stop
+[T1057] PASS Engine has shutdown path -- required marker: shutdown
+[T1058] PASS Engine handles bridge errors -- required marker: BridgeError
+[T1059] PASS Engine has health check -- required marker: _health_check
+[T1060] PASS Engine has recovery path -- required marker: _recover
+[T1061] PASS Engine command queue is present -- required marker: queue.Queue
+[T1062] PASS Engine commands use futures -- required marker: Future
+[T1063] PASS Bridge tracks repeated failures -- required marker: consecutive_errors
+[T1064] PASS Bridge has timeout-related handling -- required marker: timeout
+[T1065] PASS Core/API exposes capabilities -- required marker: capabilities
+[T1066] PASS Core includes guarded access paths -- required marker: try
+[T1067] PASS State module supports snapshot -- required marker: snapshot
+[T1068] PASS State path validates finite numeric data -- required marker: isFinite
+[T1069] PASS Store/API supports building action -- required marker: buyBuilding
+[T1070] PASS Garden state API exists -- required marker: gardenState
+[T1071] PASS Garden harvest action exists -- required marker: gardenHarvestAll
+[T1072] PASS Market state API exists -- required marker: marketState
+[T1073] PASS Market sell action exists -- required marker: marketSellAll
+[T1074] PASS Pantheon state API exists -- required marker: pantheonState
+[T1075] PASS Grimoire state API exists -- required marker: grimoireState
+[T1076] PASS Dragon unlock guard exists -- required marker: dragonUnlocked
+[T1077] PASS Santa unlock guard exists -- required marker: santaUnlocked
+[T1078] PASS Ascend backup-pending state exists -- required marker: pendingAscend
+[T1079] PASS Ascend flow includes backup path -- required marker: backup
+[T1080] PASS Ascend flow includes reincarnation -- required marker: reincarnateNow
+[T1081] PASS Event buffer can be drained -- required marker: drainEvents
+[T1082] PASS Core has bounded-value handling -- required marker: max
+[T1083] PASS Manual API action exists: click
+[T1084] PASS Manual API action exists: buyBuilding
+[T1085] PASS Manual API action exists: popShimmers
+[T1086] PASS Manual API action exists: popWrinklers
+[T1087] PASS Manual API action exists: harvestLump
+[T1088] PASS Manual API action exists: levelUpBuilding
+[T1089] PASS Manual API action exists: saveGame
+[T1090] PASS Manual API action exists: exportSaveCode
+[T1091] PASS Manual API action exists: mute
+[T1092] PASS Manual API action exists: schedule
+[T1093] PASS Manual API action exists: stats
+[T1094] PASS Manual API action exists: gardenState
+[T1095] PASS Manual API action exists: marketState
+[T1096] PASS Manual API action exists: pantheonState
+[T1097] PASS Manual API action exists: grimoireState
+[T1098] PASS Manual API action exists: ascendInfo
+[T1099] PASS Manual API action exists: prestigeList
+[T1100] PASS Manual API action exists: dragonAuras
+[T1101] PASS Manual API action exists: seasons
+[T1102] PASS Dragon unlock documentation references egg
+[T1103] PASS Santa unlock documentation references festive hat
+[T1104] PASS Second dragon aura has separate unlock guard
+[T1105] PASS Ascend can wait for backup first
+[T1106] PASS Ascend backup wait has timeout setting
+[T1107] PASS Ascend cooldown setting is referenced
+[T1108] PASS Ascend daily limit setting is referenced
+[T1109] PASS Upgrade purchase handles choice-type upgrades
+[T1110] PASS Store purchase handles blacklist configuration
+[T1111] PASS Store purchase handles toggle-upgrade option
+=== 10 / HTTP API, routing, and local-server integration | PASS 60 FAIL 0 WARN 0 SKIP 0 ===
+[T1112] PASS HTTP server starts on loopback -- http://127.0.0.1:49889/
+[T1113] PASS GET / returns 200
+[T1114] PASS GET / has HTML content type
+[T1115] PASS GET /index.html returns 200
+[T1116] PASS GET /index.html has HTML content type
+[T1117] PASS GET /static/app.js returns 200
+[T1118] PASS GET /static/app.js body is not empty
+[T1119] PASS GET /static/style.css returns 200
+[T1120] PASS GET /static/style.css body is not empty
+[T1121] PASS GET /api/state returns 200 -- {'ok': True, 'data': {'running': False, 'healthy': True, 'gameReady': False, 'snapshot': {}, 'engine': {}, 'modules': []}}
+[T1122] PASS GET /api/state returns JSON
+[T1123] PASS GET /api/config returns 200 -- {'ok': True, 'data': {'browser': {'url': 'https://orteil.dashnet.org/cookieclicker/', 'headless': False, 'channel': 'auto', 'userDataDir': '
+[T1124] PASS GET /api/config returns JSON
+[T1125] PASS GET /api/logs returns 200 -- {'ok': True, 'data': [{'ts': '2026-10-26 10:54:55.108', 'epoch': 1792979695.108, 'seq': None, 'module': 'server', 'module_jp': '管理画面', 'acti
+[T1126] PASS GET /api/logs returns JSON
+[T1127] PASS GET /api/logs/files returns 200 -- {'ok': True, 'data': [{'name': '2026-10-26.jsonl', 'path': 'C:\\Users\\Owner\\AppData\\Local\\Temp\\ccbot-complete-tests-http-tkkcs55a\\logs
+[T1128] PASS GET /api/logs/files returns JSON
+[T1129] PASS GET /api/saves returns 200 -- {'ok': True, 'data': []}
+[T1130] PASS GET /api/saves returns JSON
+[T1131] PASS GET /api/meta returns 200 -- {'ok': True, 'data': {'action': 'capabilities', 'args': {}, 'ok': True}}
+[T1132] PASS GET /api/meta returns JSON
+[T1133] PASS GET /api/schedule returns 200 -- {'ok': True, 'data': {'action': 'schedule', 'args': {}, 'ok': True}}
+[T1134] PASS GET /api/schedule returns JSON
+[T1135] PASS GET /api/garden returns 200 -- {'ok': True, 'data': {'action': 'gardenState', 'args': {}, 'ok': True}}
+[T1136] PASS GET /api/garden returns JSON
+[T1137] PASS GET /api/market returns 200 -- {'ok': True, 'data': {'action': 'marketState', 'args': {}, 'ok': True}}
+[T1138] PASS GET /api/market returns JSON
+[T1139] PASS GET /api/pantheon returns 200 -- {'ok': True, 'data': {'action': 'pantheonState', 'args': {}, 'ok': True}}
+[T1140] PASS GET /api/pantheon returns JSON
+[T1141] PASS GET /api/grimoire returns 200 -- {'ok': True, 'data': {'action': 'grimoireState', 'args': {}, 'ok': True}}
+[T1142] PASS GET /api/grimoire returns JSON
+[T1143] PASS GET /api/ascend returns 200 -- {'ok': True, 'data': {'action': 'ascendInfo', 'args': {}, 'ok': True}}
+[T1144] PASS GET /api/ascend returns JSON
+[T1145] PASS GET /api/prestige returns 200 -- {'ok': True, 'data': {'action': 'prestigeList', 'args': {}, 'ok': True}}
+[T1146] PASS GET /api/prestige returns JSON
+[T1147] PASS GET /api/store returns 200 -- {'ok': True, 'data': {'action': 'snapshot', 'args': {'store': True}, 'ok': True}}
+[T1148] PASS GET /api/store returns JSON
+[T1149] PASS GET /api/dragon-auras returns 200 -- {'ok': True, 'data': {'action': 'dragonAuras', 'args': {}, 'ok': True}}
+[T1150] PASS GET /api/dragon-auras returns JSON
+[T1151] PASS GET /api/seasons returns 200 -- {'ok': True, 'data': {'action': 'seasons', 'args': {}, 'ok': True}}
+[T1152] PASS GET /api/seasons returns JSON
+[T1153] PASS GET /api/garden-seeds returns 200 -- {'ok': True, 'data': {'action': 'gardenSeeds', 'args': {}, 'ok': True}}
+[T1154] PASS GET /api/garden-seeds returns JSON
+[T1155] PASS Log-file traversal request is rejected -- status=404
+[T1156] PASS Static traversal request is rejected -- status=404
+[T1157] PASS Unknown GET path returns 404
+[T1158] PASS POST action without action returns client error
+[T1159] PASS POST action accepts valid request
+[T1160] PASS POST action reaches fake engine
+[T1161] PASS POST config accepts partial update
+[T1162] PASS POST config updates temporary config
+[T1163] PASS POST config preserves other settings
+[T1164] PASS POST config reset returns success
+[T1165] PASS POST config reset restores default
+[T1166] PASS POST /api/saves/backup reaches fake engine -- status=200
+[T1167] PASS POST /api/saves/restore reaches fake engine -- status=200
+[T1168] PASS POST /api/saves/delete reaches fake engine -- status=200
+[T1169] PASS POST /api/reload reaches fake engine -- status=200
+[T1170] PASS POST /api/stop reaches fake engine -- status=200
+[T1171] PASS HTTP responses include hardened content headers
+=== 11 / Regression test completeness and known regression prevention | PASS 25 FAIL 0 WARN 0 SKIP 0 ===
+[T1172] PASS Python regression runner has main() -- missing marker 'def main()'
+[T1173] PASS Python regression tests cover configuration -- missing marker 'Config'
+[T1174] PASS Python regression tests cover save manager -- missing marker 'SaveManager'
+[T1175] PASS Python regression tests cover HTTP server -- missing marker 'AdminServer'
+[T1176] PASS Python regression tests cover path traversal -- missing marker 'トラバーサル'
+[T1177] PASS UI regression tests document browser prerequisite -- missing marker 'Playwright'
+[T1178] PASS UI fixture defines a garden-state builder -- missing marker 'garden_state'
+[T1179] PASS UI fixture defines a market-state builder -- missing marker 'market_state'
+[T1180] PASS UI regression tests include re-unlock phase -- missing marker '再解放'
+[T1181] PASS UI regression tests include locked UI phase -- missing marker '未解放'
+[T1182] PASS Engine regression runner exists -- missing marker 'run_engine_test'
+[T1183] PASS Engine regression suite includes ascension -- missing marker 'ascend'
+[T1184] PASS Engine regression suite includes dragon behavior -- missing marker 'dragon'
+[T1185] PASS Engine regression suite includes garden behavior -- missing marker 'garden'
+[T1186] PASS Engine regression suite includes market behavior -- missing marker 'market'
+[T1187] PASS Engine regression suite includes pantheon behavior -- missing marker 'pantheon'
+[T1188] PASS Engine regression suite includes grimoire behavior -- missing marker 'grimoire'
+[T1189] PASS Engine regression suite includes snapshots -- missing marker 'snapshot'
+[T1190] PASS UI test has no main-scope plot/seeds NameError -- If this fails, apply the included guarded UI test repair
+[T1191] PASS UI test uses an in-scope garden fixture for re-unlock
+[T1192] PASS UI test checks market configuration lock
+[T1193] PASS UI test checks garden re-unlock restoration
+[T1194] PASS UI test checks market re-unlock restoration
+[T1195] PASS UI test checks temple/grimoire restoration
+[T1196] PASS UI test handles missing Playwright as a declared skip
+=== 12 / Test isolation and non-destructive guarantees | PASS 12 FAIL 0 WARN 0 SKIP 0 ===
+[T1197] PASS TemporaryDirectory isolates test artifacts
+[T1198] PASS Config tests use isolated temporary path
+[T1199] PASS Save tests use isolated temporary path
+[T1200] PASS Log tests use isolated temporary path
+[T1201] PASS HTTP tests use isolated temporary path
+[T1202] PASS Test suite declares no-real-game-action mode
+[T1203] PASS HTTP fake engine does not launch a browser
+[T1204] PASS HTTP tests can be disabled explicitly
+[T1205] PASS Existing browser profile is not deleted by test suite
+[T1206] PASS Test paths are computed without rewriting root config
+[T1207] PASS Test cleanup unlink is only used on temporary artifacts
+[T1208] PASS Test runner URLs remain loopback-only -- ['127.0.0.1:{port}']

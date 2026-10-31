@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Cookie Clicker Bot - 管理画面</title>
+<link rel="stylesheet" href="/static/style.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><circle cx='16' cy='16' r='14' fill='%23c98b4b'/><circle cx='11' cy='12' r='2.4' fill='%235a3a1c'/><circle cx='21' cy='14' r='2' fill='%235a3a1c'/><circle cx='15' cy='22' r='2.2' fill='%235a3a1c'/></svg>">
+</head>
+<body>
+
+<div id="top">
+  <div class="logo">🍪 Cookie Clicker Bot <small id="verTag"></small></div>
+  <div class="kpis">
+    <div class="kpi"><span>クッキー</span><b id="kCookies">-</b></div>
+    <div class="kpi"><span>毎秒 (CpS)</span><b id="kCps">-</b></div>
+    <div class="kpi"><span>クリック</span><b id="kMouse">-</b></div>
+    <div class="kpi"><span>プレステージ</span><b id="kPrestige">-</b></div>
+    <div class="kpi"><span>天界チップ</span><b id="kChips">-</b></div>
+    <div class="kpi"><span>砂糖ランプ</span><b id="kLumps">-</b></div>
+    <div class="kpi"><span>稼働時間</span><b id="kUptime">-</b></div>
+  </div>
+  <span id="statusPill" class="pill">接続中…</span>
+  <label class="sw" title="ボット全体の停止/再開"><input type="checkbox" id="masterSw" checked><i></i></label>
+  <button id="btnStop" class="danger small" title="ボットを終了します">停止</button>
+</div>
+
+<div id="banner" class="hidden"></div>
+<div id="wrap">
+  <nav id="nav"></nav>
+  <main id="main">
+
+    <!-- ================= ダッシュボード ================= -->
+    <section data-tab="dash">
+      <div class="row">
+        <div class="col" style="flex:2;min-width:340px">
+          <div class="card">
+            <h3>生産グラフ <span class="sub">クッキー総数 / 毎秒生産量</span></h3>
+            <div class="body"><canvas id="chart" height="190"></canvas></div>
+          </div>
+          <div class="card">
+            <h3>モジュール <span class="sub">ON/OFF と即時実行</span></h3>
+            <div class="body"><div class="grid g3" id="modGrid"></div></div>
+          </div>
+        </div>
+        <div class="col">
+          <div class="card">
+            <h3>クイック操作</h3>
+            <div class="body grid g4" id="quickActions"></div>
+          </div>
+          <div class="card">
+            <h3>現在のバフ</h3>
+            <div class="body" id="buffList"><span class="muted">なし</span></div>
+          </div>
+          <div class="card">
+            <h3>ゴールデン / シワシワ</h3>
+            <div class="body" id="shimmerBox">-</div>
+          </div>
+          <div class="card">
+            <h3>エンジン状態</h3>
+            <div class="body mono" id="engineBox">-</div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <h3>施設 <span class="sub">保有数 / レベル / 価格</span></h3>
+        <div class="body scroll sm"><table id="bTable"></table></div>
+      </div>
+    </section>
+
+    <!-- ================= モジュール設定 ================= -->
+    <section data-tab="mods" class="hidden">
+      <div class="card">
+        <h3>モジュール別設定 <span class="sub">変更すると即座にゲームへ反映されます</span>
+          <span><button class="small" id="btnCfgReset">既定値に戻す</button></span></h3>
+        <div class="body grid g2" id="cfgGrid"></div>
+      </div>
+    </section>
+
+    <!-- ================= 施設 / ストア ================= -->
+    <section data-tab="store" class="hidden">
+      <div class="card">
+        <h3>施設 <span class="sub">購入はここから手動でも実行できます</span></h3>
+        <div class="body scroll"><table id="bTable2"></table></div>
+      </div>
+      <div class="card">
+        <h3>ショップのアップグレード <span class="sub" id="storeCount"></span>
+          <span><button class="small" id="btnBuyAll">買えるものを全部買う</button></span></h3>
+        <div class="body scroll"><table id="uTable"></table></div>
+      </div>
+    </section>
+
+    <!-- ================= 農業 ================= -->
+    <section data-tab="garden" class="hidden">
+      <div class="row">
+        <div class="col" style="flex:0 0 400px">
+          <div class="card">
+            <h3>畑 <span class="sub" id="gardenSub">-</span></h3>
+            <div class="body">
+              <div id="gardenGrid"></div>
+              <div class="legend" id="gardenLegend"></div>
+              <hr class="sep">
+              <div class="flex">
+                <span class="muted">種:</span>
+                <select id="seedSel"></select>
+                <span class="muted">土:</span>
+                <select id="soilSel"></select>
+              </div>
+              <div class="hint">畑のマスをクリックすると「選択中の種」を植えます。植えてあるマスをクリックすると収穫します。</div>
+              <div class="flex">
+                <button class="small" id="gFill">選択した種で埋める</button>
+                <button class="small" id="gHarvestMature">成熟だけ収穫</button>
+                <button class="small" id="gHarvestAll">全部収穫</button>
+                <button class="small" id="gFreeze">凍結 切替</button>
+                <button class="small danger" id="gConvert">庭を供儀 (+10ランプ)</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col">
+          <div class="card">
+            <h3>種のコンプリート状況 <span class="sub" id="seedCount"></span></h3>
+            <div class="body scroll"><table id="seedTable"></table></div>
+          </div>
+          <div class="card">
+            <h3>自動計画</h3>
+            <div class="body mono" id="gardenPlan">-</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= 取引所 ================= -->
+    <section data-tab="market" class="hidden">
+      <div class="card">
+        <h3>クッキー証券取引所 <span class="sub" id="marketSub">-</span>
+          <span>
+            <button class="small" id="mBroker">ブローカーを雇う</button>
+            <button class="small" id="mOffice">オフィスを拡張</button>
+            <button class="small danger" id="mSellAll">全て売却</button>
+          </span>
+        </h3>
+        <div class="body scroll"><table id="mTable"></table></div>
+      </div>
+      <div class="card">
+        <h3>取引戦略</h3>
+        <div class="body grid g2" id="marketCfg"></div>
+      </div>
+    </section>
+
+    <!-- ================= 神殿 / 魔法 ================= -->
+    <section data-tab="temple" class="hidden">
+      <div class="row">
+        <div class="col">
+          <div class="card">
+            <h3>神殿 (パンテオン) <span class="sub" id="panSub">-</span></h3>
+            <div class="body" id="panBox">-</div>
+          </div>
+          <div class="card">
+            <h3>神の一覧</h3>
+            <div class="body scroll sm"><table id="godTable"></table></div>
+          </div>
+        </div>
+        <div class="col">
+          <div class="card">
+            <h3>魔法書 (グリモア) <span class="sub" id="griSub">-</span></h3>
+            <div class="body scroll sm"><table id="spellTable"></table></div>
+          </div>
+          <div class="card">
+            <h3>ドラゴン / サンタ / 季節</h3>
+            <div class="body" id="miscBox">-</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= 転生 ================= -->
+    <section data-tab="ascend" class="hidden">
+      <div class="row">
+        <div class="col" style="flex:0 0 380px">
+          <div class="card">
+            <h3>転生 (昇天)</h3>
+            <div class="body" id="ascendBox">-</div>
+          </div>
+          <div class="card">
+            <h3>恒久アップグレード枠</h3>
+            <div class="body" id="permBox">-</div>
+          </div>
+        </div>
+        <div class="col">
+          <div class="card">
+            <h3>天界スキルツリー <span class="sub" id="prestigeSub"></span>
+              <span>
+                <button class="small" id="pBuyAuto">自動購入を1回実行</button>
+                <button class="small" id="pFilter">購入可能のみ</button>
+              </span>
+            </h3>
+            <div class="body scroll"><table id="pTable"></table></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= ログ ================= -->
+    <section data-tab="logs" class="hidden">
+      <div class="card">
+        <h3>行動ログ (ライブ)
+          <span class="flex">
+            <select id="logModule"><option value="">全モジュール</option></select>
+            <input id="logSearch" placeholder="検索…" style="width:150px">
+            <label class="nowrap"><input type="checkbox" id="logAuto" checked> 自動更新</label>
+            <button class="small" id="logRefresh">更新</button>
+          </span>
+        </h3>
+        <div class="body"><div id="logbox"></div></div>
+      </div>
+      <div class="card">
+        <h3>ログファイル <span class="sub">logs/actions と logs/stats に保存されています</span></h3>
+        <div class="body">
+          <div class="flex" style="margin-bottom:8px">
+            <span class="muted">種類:</span>
+            <select id="logKind"><option value="actions">行動ログ (jsonl)</option><option value="stats">統計ログ (jsonl)</option></select>
+            <button class="small" id="logListRefresh">一覧更新</button>
+          </div>
+          <div class="scroll sm"><table id="logFiles"></table></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= セーブ ================= -->
+    <section data-tab="saves" class="hidden">
+      <div class="row">
+        <div class="col">
+          <div class="card">
+            <h3>セーブのバックアップ <span class="sub" id="saveSub"></span>
+              <span><button class="small" id="sBackup">今すぐバックアップ</button></span></h3>
+            <div class="body scroll"><table id="sTable"></table></div>
+          </div>
+        </div>
+        <div class="col">
+          <div class="card">
+            <h3>セーブコードの入出力</h3>
+            <div class="body">
+              <div class="flex" style="margin-bottom:6px">
+                <button class="small" id="sExport">現在のセーブを書き出す</button>
+                <button class="small pri" id="sImport">貼り付けたコードを読み込む</button>
+              </div>
+              <div class="hint">読み込むと現在の進行は上書きされます (実行前に自動でバックアップします)。</div>
+              <textarea id="saveCode" style="width:100%;height:180px" class="mono" spellcheck="false"
+                        placeholder="ここにセーブコードを貼り付け / 書き出し結果が表示されます"></textarea>
+            </div>
+          </div>
+          <div class="card">
+            <h3>ページの再読み込み</h3>
+            <div class="body">
+              <div class="hint">ゲーム画面が固まった場合などに使います。セーブは自動でバックアップされます。</div>
+              <button class="small" id="sReload">ゲームページを再読み込み</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= 設定(JSON) ================= -->
+    <section data-tab="raw" class="hidden">
+      <div class="card">
+        <h3>設定 (config.json)
+          <span><button class="small" id="rReload">読み直す</button>
+          <button class="small pri" id="rSave">保存して反映</button></span></h3>
+        <div class="body">
+          <div class="hint">JSON を直接編集できます。保存すると config.json に書き込まれ、ページ内エンジンへ即反映されます。</div>
+          <textarea id="rawCfg" class="mono" style="width:100%;height:560px" spellcheck="false"></textarea>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<div id="ticker"></div>
+<div id="toast"></div>
+<script src="/static/app.js"></script>
+</body>
+</html>

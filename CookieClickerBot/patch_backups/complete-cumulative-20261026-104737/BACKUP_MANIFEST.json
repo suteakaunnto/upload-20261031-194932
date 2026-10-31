@@ -1,0 +1,20 @@
+{
+  "created_at": "2026-10-26T10:47:37",
+  "project_root": "C:\\Users\\Owner\\Downloads\\workspace (4)\\CookieClickerBot",
+  "files": [
+    {
+      "path": "ccbot/web/app.js",
+      "status": "更新",
+      "original_sha256": "78a70e11d30f2fdff32de2b33d07fed68653a7e04e7fddfa3857d8a57e06039c",
+      "patched_sha256": "6211f339a28d40c85602c3873d5ea17e5ed6dbaee6aa8b884ae7c90b2cdf4ace",
+      "backup_path": "patch_backups/complete-cumulative-20261026-104737/ccbot/web/app.js"
+    },
+    {
+      "path": "tests/test_ui.py",
+      "status": "更新",
+      "original_sha256": "e31e74f3ff7e12d84ebcf6e70d1df40b6abf1a23d44b904418c057ef970825f9",
+      "patched_sha256": "b7ba124fa28fe7e7e7c40d203d55b29a46e8e886ee51a749ac2dd0c3508aeb35",
+      "backup_path": "patch_backups/complete-cumulative-20261026-104737/tests/test_ui.py"
+    }
+  ]
+}

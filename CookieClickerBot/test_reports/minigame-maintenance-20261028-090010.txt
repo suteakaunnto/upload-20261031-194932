@@ -1,0 +1,376 @@
+Minigame maintenance tests / 2026-10-28T09:00:10
+Project: C:\Users\Owner\Downloads\workspace (4)\CookieClickerBot
+
+=== JS syntax: ccbot/js/40_garden.js ===
+COMMAND: C:\Program Files\nodejs\node.EXE --check ccbot/js/40_garden.js
+
+EXIT CODE: 0
+
+=== JS syntax: ccbot/js/50_market.js ===
+COMMAND: C:\Program Files\nodejs\node.EXE --check ccbot/js/50_market.js
+
+EXIT CODE: 0
+
+=== JS syntax: ccbot/js/60_temple_grimoire.js ===
+COMMAND: C:\Program Files\nodejs\node.EXE --check ccbot/js/60_temple_grimoire.js
+
+EXIT CODE: 0
+
+=== JS syntax: ccbot/web/app.js ===
+COMMAND: C:\Program Files\nodejs\node.EXE --check ccbot/web/app.js
+
+EXIT CODE: 0
+
+=== JS syntax: tests/run_engine_test.js ===
+COMMAND: C:\Program Files\nodejs\node.EXE --check tests/run_engine_test.js
+
+EXIT CODE: 0
+
+=== Engine regression tests ===
+COMMAND: C:\Program Files\nodejs\node.EXE tests/run_engine_test.js
+
+[36m== 1. エンジンの初期化 ==[0m
+  [32m✔[0m __CCBOT が定義されている
+  [32m✔[0m ゲームの ready 判定
+  [32m✔[0m logic フックの登録
+  [32m✔[0m capabilities の取得
+  [32m✔[0m 全ミニゲームの検出
+
+[36m== 2. クリッカー ==[0m
+  [32m✔[0m クリックが発生した (47回/4秒)
+  [32m✔[0m クリック速度が上限以下 (11.8/秒)
+  [32m✔[0m handmadeCookies が増加
+  [32m✔[0m オートクリッカー検出が閾値未満 (0)
+
+[36m== 3. ゴールデンクッキー / トナカイ ==[0m
+  [32m✔[0m ゴールデンを回収 (1)
+  [32m✔[0m レイスクッキーを回収 (1)
+  [32m✔[0m トナカイを回収 (1)
+  [32m✔[0m 画面からシマーが消えた
+
+[36m== 4. シワシワおばあちゃん ==[0m
+  [32m✔[0m シワシワを破裂させた (5匹)
+  [32m✔[0m 残す匹数を守っている (残り2)
+
+[36m== 5. アップグレードと施設の購入 ==[0m
+  [32m✔[0m アップグレードを購入した (0 -> 5: Reinforced index finger, Carpal tunnel prevention cream, Thousand fingers, Kitten helpers, One mind)
+  [32m✔[0m 残りはトグル系(季節)のみ = 意図通り買い控えている
+  [32m✔[0m 大惨事系も ignore 設定なら購入する
+  [32m✔[0m buyToggles=ON ならトグル系も買う
+  [32m✔[0m ブラックリスト指定した UP は買わない
+  [32m✔[0m ブラックリスト以外は買う
+  [32m✔[0m 施設を自動購入した (+162)
+  [32m✔[0m Cursor が増えた (65 -> 78)
+  [32m✔[0m 統計: buildings=303 spent=6.02e+12
+  [32m✔[0m cheapest 戦略でも購入できる (+150)
+
+[36m== 6. 砂糖ランプと建物レベル ==[0m
+  [32m✔[0m ランプを収穫した
+  [32m✔[0m 建物レベルが下がっていない (Lv7)
+  [32m✔[0m 統計: levelUps=14
+
+[36m== 7. 農業 (庭) ==[0m
+  [32m✔[0m 庭に植栽した (24 株)
+  [32m✔[0m 統計: gardenPlants=24
+  [32m✔[0m gardenState の取得
+  [32m✔[0m 種の数を返す (34)
+  [32m✔[0m gardenSetSoil がエラーにならない
+  [32m✔[0m gardenHarvestAll がエラーにならない
+
+[36m== 8. 種の自動解放 (unlock モード) ==[0m
+  [32m✔[0m 種が解放され始めた (2/34)
+  [32m✔[0m 解放計画が動いている
+  [32m✔[0m Brown Moldの初回解放がMeddleweed収穫を使う
+  [32m✔[0m Crumbsporeの初回解放がMeddleweed収穫を使う
+  [32m✔[0m 循環依存の前にMeddleweed解放を計画する
+  [32m✔[0m Meddleweed未解放時はBrown Mold/Crumbsporeより先に計画
+  [32m✔[0m 通常栽培は成熟後に次の種へ切り替わる
+  [32m✔[0m 自動切替後に新しい種が実際に植えられる
+  [32m✔[0m 未成熟株がある間は種切替を繰り返さない
+  [32m✔[0m weedControl OFFでも成熟済み旧種を撤去して自動切替を継続
+  [32m✔[0m unlockモードは目的種に必要な材料種を自動選択する
+  [32m✔[0m 長時間の変異待ちで解放対象を自動リセットしない
+
+[36m== 9. クッキー取引所 ==[0m
+  [32m✔[0m 安値で買い注文を出した (92株)
+  [32m✔[0m 在庫を保有している
+  [32m✔[0m ブローカーを自動雇用した (3/16)
+  [32m✔[0m 高値で売り注文を出した (505株)
+  [32m✔[0m 損益が記録されている (108852 CpS秒)
+  [32m✔[0m marketState の取得
+  [32m✔[0m 価格の履歴を返す
+  [32m✔[0m 市場の自動取引診断を取得
+  [32m✔[0m 市場上限フォールバックは建物最高保有数を基準にする
+  [32m✔[0m 市場オフィス1の倉庫+50を反映
+  [32m✔[0m 市場最終オフィスの累積容量と1.5倍を反映
+  [32m✔[0m 市場の同一ティック拒否を診断に表示
+  [32m✔[0m 拒否された市場取引は在庫を変えない
+
+[36m== 10. 魔法書 (グリモア) ==[0m
+  [32m✔[0m 呪文を詠唱した (35回)
+  [32m✔[0m 魔力を消費した (79.7/100)
+  [32m✔[0m grimoireState の取得 (9呪文)
+  [32m✔[0m 魔法書の直近詠唱結果を診断
+
+[36m== 11. 神殿 (パンテオン) ==[0m
+  [32m✔[0m 神を配置した (3体)
+  [32m✔[0m 統計: godSwaps=6
+  [32m✔[0m スワップを消費した (残り0)
+  [32m✔[0m pantheonState の取得
+  [32m✔[0m 設定ロードアウト3枠を段階的に自動配置できる (3/3)
+  [32m✔[0m パンテオン診断状態を取得
+  [32m✔[0m スワップ3/3では回復待ち時間を0秒と表示
+  [32m✔[0m スワップ0でも神を無料で外せる
+
+[36m== 12. ドラゴンとサンタ ==[0m
+  [32m✔[0m ドラゴン未解放時は自動育成を呼び出さない
+  [32m✔[0m ドラゴン未解放時はオーラを変更しない
+  [32m✔[0m ドラゴン未解放時は手動育成も拒否
+  [32m✔[0m ドラゴン未解放時はオーラ設定も拒否
+  [32m✔[0m ドラゴン未解放時はオーラ一覧をロック
+  [32m✔[0m 2枠目はドラゴン最大レベル到達前に拒否
+  [32m✔[0m A crumbly egg 購入後はドラゴン育成が可能 (22)
+  [32m✔[0m オーラ "Dragon God"(8) を設定
+  [32m✔[0m 最大レベル未到達時は2枠目を変更しない
+  [32m✔[0m 最大レベル到達後は2枠目に "Reality Bending"(18) を設定
+  [32m✔[0m dragonAuras の取得
+  [32m✔[0m snapshot に dragonUnlocked を含む
+  [32m✔[0m snapshot に dragonSecondAuraUnlocked を含む
+  [32m✔[0m サンタ未解放時は自動強化しない
+  [32m✔[0m サンタ未解放時は手動強化も拒否
+  [32m✔[0m A festive hat 購入後はサンタをレベルアップ (2)
+
+[36m== 13. 転生と天界スキルツリー ==[0m
+  [32m✔[0m 転生を要求した (バックアップ待ち)
+  [32m✔[0m 転生が実行された
+  [32m✔[0m 天界アップグレードを購入 (4個)
+  [32m✔[0m Legacy を購入した
+  [32m✔[0m 親 prerequisite の順を守って Heavenly cookies を購入
+  [32m✔[0m 自動で現世に復帰した (resets=1)
+  [32m✔[0m 統計: ascensions=1
+
+[36m== 14. イベントバッファ ==[0m
+  [32m✔[0m モジュールエラーが発生していない
+  [32m✔[0m drainEvents が成功
+  [32m✔[0m イベントが 558 件記録された
+  [32m✔[0m 複数モジュールのイベントがある: ascend,building,clicker,core,dragon,garden,golden,grimoire,lump,market,pantheon,prestige,santa,upgrade,wrinkler
+  [32m✔[0m 全イベントに t/m/a がある
+  [32m✔[0m drain 後は同じイベントを返さない
+
+[36m== 15. スナップショット ==[0m
+  [32m✔[0m snapshot が成功
+  [32m✔[0m cookies / cookiesPs
+  [32m✔[0m buildings (20)
+  [32m✔[0m store
+  [32m✔[0m buffs
+  [32m✔[0m ミニゲームの状態
+  [32m✔[0m prestigeTree
+  [32m✔[0m permanentUpgrades
+  [32m✔[0m スナップショットのサイズが適正 (26KB)
+
+[36m== 16. 手動 API ==[0m
+  [32m✔[0m click
+  [32m✔[0m buyBuilding
+  [32m✔[0m popShimmers
+  [32m✔[0m popWrinklers
+  [32m✔[0m harvestLump
+  [32m✔[0m levelUpBuilding
+  [32m✔[0m saveGame
+  [32m✔[0m exportSaveCode
+  [32m✔[0m mute
+  [32m✔[0m schedule (15 モジュール)
+  [32m✔[0m stats
+  [32m✔[0m 未知のアクションは ok=false
+
+[36m== 17. エラー耐性 ==[0m
+  [32m✔[0m ゲーム未起動時は安全にエラーを返す
+  [32m✔[0m 未起動時のアクションはエラーを返す
+  [32m✔[0m 復帰後に again 正常
+
+[36m== 18. ゲーム状態の安全性 ==[0m
+  [32m✔[0m CpS計測後に施設数が元に戻る
+  [32m✔[0m CpS も元に戻る
+  [32m✔[0m choicesFunction を持つ UP は自動購入しない
+  [32m✔[0m cookies が有限かつ非負
+  [32m✔[0m 施設数が正常
+
+========================================================
+  結果: 129 成功 / 0 失敗
+========================================================
+
+EXIT CODE: 0
+
+=== Python tests ===
+COMMAND: C:\Users\Owner\Downloads\workspace (4)\CookieClickerBot\.venv\Scripts\python.exe tests/test_python.py
+
+[36m== 1. パスと JS バンドル ==[0m
+  [32m✔[0m JS バンドルが生成できる (148982 bytes)
+  [32m✔[0m バンドルに run() が含まれる
+  [32m✔[0m 名前空間の定義は 1 箇所
+  [32m✔[0m 00_core.js が空でない
+  [32m✔[0m 10_state.js が空でない
+  [32m✔[0m 20_basic.js が空でない
+  [32m✔[0m 30_store.js が空でない
+  [32m✔[0m 40_garden.js が空でない
+  [32m✔[0m 50_market.js が空でない
+  [32m✔[0m 60_temple_grimoire.js が空でない
+  [32m✔[0m 70_ascend.js が空でない
+  [32m✔[0m 90_api.js が空でない
+  [32m✔[0m 管理画面のファイルが揃っている
+  [32m✔[0m install.bat (CRLF / BOMなし)
+  [32m✔[0m install.bat に UTF-8 設定がある
+  [32m✔[0m start_bot.bat (CRLF / BOMなし)
+  [32m✔[0m start_bot.bat に UTF-8 設定がある
+  [32m✔[0m uninstall.bat (CRLF / BOMなし)
+  [32m✔[0m uninstall.bat に UTF-8 設定がある
+  [32m✔[0m doctor.bat (CRLF / BOMなし)
+  [32m✔[0m doctor.bat に UTF-8 設定がある
+
+[36m== 2. 設定 ==[0m
+  [32m✔[0m デフォルト値の読み込み
+  [32m✔[0m update での上書き
+  [32m✔[0m 未指定キーはデフォルトのまま
+  [32m✔[0m ファイルからの再読み込み
+  [32m✔[0m engine_config にブラウザ設定を含めない
+  [32m✔[0m engine_config のキーが JS 側と一致
+  [32m✔[0m deep_merge
+  [32m✔[0m reset
+
+[36m== 3. ログ ==[0m
+  [32m✔[0m リングバッファに 6 件
+  [32m✔[0m 行にタイムスタンプがある
+  [32m✔[0m 日本語ラベルが付く: 2026-10-28 09:00:11.391 [施設/購入] count=0 items=[{"building": "Cursor", "count": 2}] -> spent=0.0
+  [32m✔[0m モジュールで絞り込める
+  [32m✔[0m 全文検索できる
+  [32m✔[0m 行動ログ(jsonl)が書かれた
+  [32m✔[0m 行動ログ(text)が書かれた
+  [32m✔[0m JSONL のスキーマ
+  [32m✔[0m 統計ログが書かれた
+  [32m✔[0m 統計のメモリ内履歴
+  [32m✔[0m log_files(actions)
+  [32m✔[0m log_files(stats)
+  [32m✔[0m read_log_file の tail
+  [32m✔[0m パストラバーサルを拒否
+  [32m✔[0m cleanup_old_logs(0) は何もしない
+
+[36m== 4. セーブのバックアップ ==[0m
+  [32m✔[0m keep=3 で古いものを削除
+  [32m✔[0m 新しい順に並ぶ
+  [32m✔[0m タグを解析できる
+  [32m✔[0m セーブコードを読み出せる
+  [32m✔[0m 削除できる
+  [32m✔[0m 削除後に 2 件
+  [32m✔[0m 不正な名前は拒否
+  [終了時バックアップのフォールバック]
+  [32m✔[0m フォールバック試験用の保存データを作成
+  [32m✔[0m ゲームページ終了後も終了時フォールバックを作成
+  [32m✔[0m フォールバック内容が最後の正常バックアップと一致
+  [32m✔[0m フォールバックを行動ログに記録
+
+[36m== 5. 管理画面 (HTTP API) ==[0m
+  [32m✔[0m サーバが起動した
+  [32m✔[0m GET / (index.html)
+  [32m✔[0m GET /static/app.js
+  [32m✔[0m GET /static/style.css
+  [32m✔[0m 静的ファイルのディレクトリトラバーサルを拒否
+  [32m✔[0m GET /api/state
+  [32m✔[0m GET /api/config
+  [32m✔[0m config に defaults/modules を含む
+  [32m✔[0m POST /api/config
+  [32m✔[0m config.json に保存された
+  [32m✔[0m 部分的な更新で他キーは保持
+  [32m✔[0m POST /api/action
+  [32m✔[0m エンジンにコマンドが渡った
+  [32m✔[0m action 無しのリクエストはエラー
+  [32m✔[0m GET /api/logs
+  [32m✔[0m GET /api/logs/files
+  [32m✔[0m GET /api/saves
+  [32m✔[0m POST /api/saves/backup
+  [32m✔[0m GET /api/saves/download
+  [32m✔[0m POST /api/saves/restore
+  [32m✔[0m POST /api/saves/delete
+  [32m✔[0m GET /api/garden
+  [32m✔[0m GET /api/market
+  [32m✔[0m GET /api/prestige
+  [32m✔[0m 未知のパスは 404
+  [32m✔[0m POST /api/stop
+  [32m✔[0m サーバを停止できた
+
+[36m== 6. 同時アクセス ==[0m
+  [32m✔[0m 6スレッド×12リクエストをエラーなく処理
+  [32m✔[0m 全コマンドが届いた
+
+========================================================
+  結果: 84 成功 / 0 失敗
+========================================================
+
+EXIT CODE: 0
+
+=== UI browser test ===
+COMMAND: C:\Users\Owner\Downloads\workspace (4)\CookieClickerBot\.venv\Scripts\python.exe tests/test_ui.py
+
+[36m== 管理画面の描画 ==[0m
+  [32m✔[0m タイトル: Cookie Clicker Bot - 管理画面
+  [32m✔[0m ナビに 10 タブ
+  [32m✔[0m KPI が埋まっている: 1.23 Qa | 4.50 B | 1.20 M | 1,234 | 56 | 23 | 1時間 0分
+  [32m✔[0m ステータス表示
+  [32m✔[0m 警告バナーは非表示
+
+[36m== 各タブの描画内容 ==[0m
+  [32m✔[0m dash: 353 要素 (期待 200 以上)
+  [32m✔[0m mods: 851 要素 (期待 300 以上)
+  [32m✔[0m store: 392 要素 (期待 100 以上)
+  [32m✔[0m garden: 499 要素 (期待 100 以上)
+  [31m✘[0m market: 12 要素 (期待 100 以上)
+  [32m✔[0m temple: 238 要素 (期待 100 以上)
+  [32m✔[0m ascend: 138 要素 (期待 50 以上)
+  [32m✔[0m logs: 77 要素 (期待 20 以上)
+  [32m✔[0m saves: 41 要素 (期待 20 以上)
+  [32m✔[0m raw: 8 要素 (期待 5 以上)
+  [32m✔[0m 庭の 6x6 グリッドが描画された (36 マス)
+  [32m✔[0m 種の一覧が描画された
+  [31m✘[0m 取引所の銘柄表が描画された
+  [31m✘[0m 価格スパークラインが描画された
+  [32m✔[0m 天界ツリーが描画された
+  [32m✔[0m ログ行が描画された
+  [32m✔[0m バックアップ一覧が描画された
+  [32m✔[0m 設定JSONが表示された
+  [32m✔[0m 設定フォームの項目数: 126
+
+[36m== 転生後のミニゲーム UI ロック ==[0m
+  [32m✔[0m 未解放の庭タブ全体が操作不可
+  [32m✔[0m 庭の一括操作と選択項目が無効
+  [32m✔[0m 転生前の畑マス・凡例が残らない
+  [32m✔[0m 未解放の取引所操作が無効
+  [32m✔[0m 未解放中は取引設定フォームを置き換える
+  [32m✔[0m 未解放の神殿パネルが操作不可
+  [32m✔[0m 未解放のグリモアパネルが操作不可
+  [32m✔[0m 神殿の古い一覧が残らない
+  [32m✔[0m 魔法書に未解放メッセージを表示
+  [32m✔[0m 庭の再解放で操作を再び有効化
+  [32m✔[0m 取引所の再解放で操作を再び有効化
+  [32m✔[0m 神殿とグリモアの再解放で操作を再び有効化
+
+[36m== UI 操作 ==[0m
+  [32m✔[0m モジュールカード 16 枚
+  [32m✔[0m クイック操作ボタン
+  [32m✔[0m グラフが実際に描画されている
+
+[36m== JavaScript エラー ==[0m
+   ! ('pageerror', "Cannot set properties of null (setting 'textContent')")
+   ! ('pageerror', "Cannot set properties of null (setting 'textContent')")
+   ! ('pageerror', "Cannot set properties of null (setting 'textContent')")
+  [31m✘[0m コンソールエラー 0 件 (3)
+
+========================================================
+  結果: 36 成功 / 4 失敗
+  失敗項目:
+   - market: 12 要素 (期待 100 以上)
+   - 取引所の銘柄表が描画された
+   - 価格スパークラインが描画された
+   - コンソールエラー 0 件 (3)
+========================================================
+
+EXIT CODE: 1
+
+FINAL: FAIL

@@ -1,0 +1,1170 @@
+/* Cookie Clicker Bot - 管理画面フロントエンド (依存ライブラリなし) */
+(function () {
+  'use strict';
+
+  /* ================================================================== */
+  /* 基本                                                                */
+  /* ================================================================== */
+  const $ = (s, r) => (r || document).querySelector(s);
+  const $$ = (s, r) => Array.from((r || document).querySelectorAll(s));
+  const el = (tag, attrs, html) => {
+    const n = document.createElement(tag);
+    if (attrs) for (const k in attrs) { if (k === 'class') n.className = attrs[k]; else if (k === 'onclick') n.onclick = attrs[k]; else n.setAttribute(k, attrs[k]); }
+    if (html !== undefined) n.innerHTML = html;
+    return n;
+  };
+  const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+  // Lock controls for minigames that the live game has not currently unlocked.
+  // `inert` blocks pointer, keyboard, and focus interaction; disabled attributes
+  // are also applied to form controls so the lock is explicit in the UI.
+  function setInteractiveEnabled(root, enabled) {
+    if (!root) return;
+    const locked = !enabled;
+    root.inert = locked;
+    root.setAttribute('aria-disabled', String(locked));
+    root.classList.toggle('locked-panel', locked);
+    root.querySelectorAll('button, input, select, textarea').forEach(control => {
+      if (locked) {
+        if (!control.hasAttribute('data-ccbot-disabled-before-lock')) {
+          control.setAttribute('data-ccbot-disabled-before-lock', control.disabled ? 'true' : 'false');
+        }
+        control.disabled = true;
+      } else if (control.hasAttribute('data-ccbot-disabled-before-lock')) {
+        control.disabled = control.getAttribute('data-ccbot-disabled-before-lock') === 'true';
+        control.removeAttribute('data-ccbot-disabled-before-lock');
+      }
+    });
+  }
+
+  async function api(path, opts) {
+    const r = await fetch(path, opts);
+    const t = await r.text();
+    try { return JSON.parse(t); } catch (e) { return { ok: false, error: t.slice(0, 200) }; }
+  }
+  const get = p => api(p);
+  const post = (p, body) => api(p, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body || {}) });
+
+  async function act(action, args, quiet) {
+    const r = await post('/api/action', { action, args: args || {} });
+    if (!quiet) {
+      if (r && r.ok) toast((r.data && (r.data.ok === false ? '失敗: ' + (r.data.error || '') : 'OK')) || 'OK', r.data && r.data.ok === false ? 'bad' : 'ok');
+      else toast('失敗: ' + ((r && r.error) || 'unknown'), 'bad');
+    }
+    refreshSoon();
+    return r;
+  }
+
+  let toastN = 0;
+  function toast(msg, kind) {
+    const box = $('#toast');
+    const n = el('div', { class: 'toast ' + (kind || '') }, esc(msg));
+    box.appendChild(n);
+    const id = ++toastN;
+    setTimeout(() => { n.style.opacity = '0'; n.style.transition = '.3s'; setTimeout(() => n.remove(), 320); }, 3200);
+    while (box.children.length > 5) box.firstChild.remove();
+    return id;
+  }
+  window.__toast = toast;
+
+  /* ================================================================== */
+  /* 数値整形                                                             */
+  /* ================================================================== */
+  const SUFFIX = ['', 'K', 'M', 'B', 'T', 'Qa', 'Qi', 'Sx', 'Sp', 'Oc', 'No', 'Dc',
+    'UDc', 'DDc', 'TDc', 'QaDc', 'QiDc', 'SxDc', 'SpDc', 'OcDc', 'NoDc', 'Vg'];
+  function fmt(v, dec) {
+    if (v === null || v === undefined || isNaN(v)) return '-';
+    v = Number(v);
+    const neg = v < 0; v = Math.abs(v);
+    if (v < 10000) { const s = v < 10 ? v.toFixed(dec === undefined ? 1 : dec) : Math.floor(v).toLocaleString('en-US'); return (neg ? '-' : '') + s; }
+    const t = Math.floor(Math.log10(v) / 3);
+    if (t >= SUFFIX.length) return (neg ? '-' : '') + v.toExponential(2).replace('e+', 'e');
+    const scaled = v / Math.pow(1000, t);
+    return (neg ? '-' : '') + (scaled < 10 ? scaled.toFixed(2) : scaled < 100 ? scaled.toFixed(1) : scaled.toFixed(0)) + ' ' + SUFFIX[t];
+  }
+  function dur(sec) {
+    sec = Math.max(0, Math.floor(sec || 0));
+    const d = Math.floor(sec / 86400), h = Math.floor(sec % 86400 / 3600), m = Math.floor(sec % 3600 / 60), s = sec % 60;
+    if (d) return d + '日 ' + h + '時間';
+    if (h) return h + '時間 ' + m + '分';
+    if (m) return m + '分 ' + s + '秒';
+    return s + '秒';
+  }
+
+  /* ================================================================== */
+  /* タブ                                                                */
+  /* ================================================================== */
+  const TABS = [
+    ['dash', '📊 ダッシュボード'],
+    ['mods', '⚙️ モジュール設定'],
+    ['store', '🏪 施設・ストア'],
+    ['garden', '🌱 農業(庭)'],
+    ['market', '📈 取引所'],
+    ['temple', '🔮 神殿・魔法'],
+    ['ascend', '✨ 転生・天界'],
+    ['logs', '📜 ログ'],
+    ['saves', '💾 セーブ'],
+    ['raw', '🧩 設定(JSON)'],
+  ];
+  let tab = 'dash';
+  function buildNav() {
+    const nav = $('#nav');
+    TABS.forEach(([k, label]) => {
+      const b = el('button', { onclick: () => setTab(k) }, label);
+      b.dataset.tab = k;
+      nav.appendChild(b);
+    });
+  }
+  function setTab(k) {
+    tab = k;
+    lastTabAt[k] = 0;                     // タブを切り替えたときは必ず即描画する
+    $$('#nav button').forEach(b => b.classList.toggle('on', b.dataset.tab === k));
+    $$('main section').forEach(s => s.classList.toggle('hidden', s.dataset.tab !== k));
+    renderTab();
+  }
+
+  /* ================================================================== */
+  /* モジュール定義 (表示名 / 説明 / 即時実行ボタン)                        */
+  /* ================================================================== */
+  const MODULES = {
+    clicker: ['🖱 クリック', '大きなクッキーを自動クリックします。ゲーム側の検出を避けるため最大 14.5回/秒に制限しています。', [['click', { times: 10 }, '10回クリック']]],
+    golden: ['🌟 ゴールデン', 'ゴールデン/レイス/トナカイ出現時に即回収します。', [['popShimmers', { all: true }, '今すぐ回収']]],
+    wrinkler: ['🐛 シワシワ', 'シワシワおばあちゃんを破裂させて蓄積クッキーを回収します。', [['popWrinklers', {}, '全部破裂'], ['popWrinklers', { shinyOnly: true }, ' shiny のみ']]],
+    upgrade: ['⬆️ アップグレード', 'ショップのアップグレードを安い順に自動購入します。', []],
+    building: ['🏭 施設', '回収効率(価格÷増加CpS)が最も良い施設を自動購入します。', [['buyAllAffordable', {}, '買える分だけ今すぐ']]],
+    lump: ['🍬 砂糖ランプ', 'ランプの自動収穫と、建物レベルの自動強化を行います。', [['harvestLump', {}, 'ランプ収穫']]],
+    garden: ['🌱 農業(庭)', '植栽・収穫・土壌管理・雑草除去・種の解放・ランプ農園を自動化します。', [['gardenHarvestAll', {}, '全部収穫'], ['gardenConvert', {}, '供儀']]],
+    market: ['📈 取引所', '株価が安値で買い・高値で売るスイング取引を自動で行います。', [['marketSellAll', {}, '全売却'], ['marketHireBroker', {}, 'ブローカー雇用']]],
+    grimoire: ['🔮 魔法', '魔力が溜まったら設定した呪文を自動詠唱します。', []],
+    pantheon: ['⛩ 神殿', '礼拝スワップを使って神を最適なスロットに自動配置します。', []],
+    dragon: ['🐉 ドラゴン', 'クランブラーの育成とオーラ設定を自動で行います。', [['trainDragon', {}, '育成']]],
+    santa: ['🎅 サンタ', 'サンタのレベルを自動で上げます。', [['upgradeSanta', {}, 'レベルアップ']]],
+    season: ['🎄 季節', '指定した季節へ自動的に切り替えます(コストが高いので既定はOFF)。', []],
+    ascend: ['✨ 転生', '条件を満たすと自動で転生(昇天)し、天界チップを獲得します。', []],
+    prestige: ['🌌 天界ツリー', '転生画面でプレステージアップグレードを優先順位に沿って購入します。', [['buyPrestige', {}, '自動購入']]],
+    housekeep: ['🧹 保守', 'ミュート・ダイアログ自動クローズ・スリープ復帰・自動セーブなど。', [['closePrompt', {}, 'ダイアログを閉じる']]],
+  };
+
+  const QUICK = [
+    ['click', { times: 50, direct: true }, 'クリック ×50'],
+    ['popShimmers', { all: true }, 'ゴールデン回収'],
+    ['popWrinklers', {}, 'シワシワ全破裂'],
+    ['harvestLump', {}, 'ランプ収穫'],
+    ['buyAllAffordable', {}, '買い物が可能なだけ'],
+    ['gardenHarvestAll', {}, '庭を全収穫'],
+    ['marketSellAll', {}, '株を全売却'],
+    ['castSpell', { spell: 'conjure baked goods' }, '魔法: 菓子生成'],
+    ['saveGame', {}, 'セーブ'],
+    ['__backup', { tag: 'manual' }, 'バックアップ'],
+    ['ascendNow', { reason: 'manual' }, '今すぐ転生'],
+    ['reincarnateNow', {}, '現世に戻る'],
+  ];
+
+  /* ================================================================== */
+  /* 設定項目の日本語ラベル                                                 */
+  /* ================================================================== */
+  const LABELS = {
+    'master': ['全体スイッチ', 'すべての自動処理を止めます(ゲームは動き続けます)'],
+    'clicker.enabled': ['有効', ''], 'clicker.cps': ['クリック/秒', 'ゲームの検出回避のため実効上限は 14.5'],
+    'clicker.direct': ['直接加算モード', 'ON: クリック処理を経由せず即加算(高速・検出なし)。OFF: 本来のクリック関数を呼ぶ'],
+    'clicker.boostOnFrenzy': ['フィーバー中に増速', 'Click frenzy などのバフ中にクリック速度を上げます'],
+    'clicker.boostMult': ['増速倍率', ''], 'clicker.maxPerTick': ['1ティックあたりの最大クリック数', ''],
+    'golden.enabled': ['有効', ''], 'golden.popGolden': ['ゴールデンを回収', ''], 'golden.popWrath': ['レイス(怒り)を回収', ''],
+    'golden.popReindeer': ['トナカイを回収', ''], 'golden.popOthers': ['その他(クッキーストーム等)を回収', ''],
+    'wrinkler.enabled': ['有効', ''], 'wrinkler.popShiny': ['キラキラ(shiny)を破裂', '3倍の報酬が得られます'],
+    'wrinkler.popAboveSucked': ['この量吸ったら破裂', '0 = 溢れた分だけ破裂'], 'wrinkler.keep': ['残す匹数', ''],
+    'upgrade.enabled': ['有効', ''], 'upgrade.strategy': ['購入順', 'cheapest=安い順'],
+    'upgrade.reserveCookies': ['確保クッキー', 'この量だけは使わずに残します'], 'upgrade.reserveRatio': ['確保(分単位)', 'CpS×60×この値 を残します'],
+    'upgrade.buyToggles': ['トグル系を買う', '季節トリガーなど。既定OFF(季節モジュールが担当)'],
+    'upgrade.buyTech': ['研究(tech)を買う', ''], 'upgrade.buyLumpUpgrades': ['ランプ消費UPを買う', ''],
+    'upgrade.maxPerTick': ['1回の購入数上限', ''], 'upgrade.blacklist': ['購入しない名前', 'カンマ区切り(内部名/表示名)'],
+    'upgrade.whitelist': ['これだけ買う', '空=制限なし'], 'upgrade.grandmapocalypse': ['大惨事', 'ignore=放任 / off=止める(Elder Pledge側) / on=進める'],
+    'building.enabled': ['有効', ''], 'building.strategy': ['戦略', 'payback=回収効率重視 / cheapest=最安重視'],
+    'building.reserveCookies': ['確保クッキー', ''], 'building.reserveRatio': ['確保(分単位)', ''],
+    'building.maxPerTick': ['1回の購入数上限', ''], 'building.maxPaybackSec': ['回収時間の上限(秒)', '0=無制限'],
+    'building.ignore': ['除外する施設', 'カンマ区切り 例: Cursor,Grandma'],
+    'building.measureEveryMs': ['効率計測の間隔(ms)', ''], 'building.maxMeasure': ['計測する施設数', '増やすと正確だが重くなります'],
+    'lump.enabled': ['有効', ''], 'lump.autoHarvest': ['自動収穫', '熟したら即収穫'],
+    'lump.autoLevel': ['自動レベル上げ', 'ランプを建物レベルに自動で使います'], 'lump.reserve': ['残すランプ数', ''],
+    'lump.maxLevel': ['最大レベル', 'レベル1でミニゲームが解放されます'], 'lump.priority': ['レベル上げの優先順', 'カンマ区切り(上のほど優先)'],
+    'garden.enabled': ['有効', ''], 'garden.mode': ['モード', 'auto=自動 / unlock=種解放優先 / farm=栽培 / lumpfarm=ランプ農園 / off=何もしない'],
+    'garden.farmSeed': ['栽培する種', '固定したい種。自動切替ONなら初期候補として使用'],
+    'garden.autoSeedSwitch': ['成熟後に種を自動切替', 'ONなら解放済み・植栽可能な種を順番に栽培。unlockモードでは変異レシピの必要種を自動で切替'],
+    'garden.harvestMature': ['成熟したら収穫', 'OFFなら成熟させて放置(常時効果を得るのに有利)'],
+    'garden.soil': ['土壌', 'auto=自動 / dirt / fertilizer / clay / pebbles / woodchips'],
+    'garden.unlockAll': ['種を全部解放する', '変異を自動で狙って全種の種を集めます'],
+    'garden.lumpFarm': ['ランプ農園', 'queenbeet 8株で juicy queenbeet を変異させ砂糖ランプを狙います'],
+    'garden.maxPlantPerTick': ['1回の植栽数', ''], 'garden.weedControl': ['雑草を除去', ''],
+    'market.enabled': ['有効', ''], 'market.buyBelowRatio': ['買い: 基準値×この倍率以下', 'resting value に対する比率'],
+    'market.sellAboveRatio': ['売り: 基準値×この倍率以上', ''], 'market.momentum': ['勢いを見る', '下落中は買いを見送ります'],
+    'market.spendRatio': ['使うクッキーの割合', '0〜1'], 'market.minProfitCpsSec': ['最低期待利益(CpS秒)', ''],
+    'market.stopLossRatio': ['損切り比率', '買値×この値を下回ったら売却 (0=無効)'],
+    'market.minProfitRatio': ['利確比率', '買値×(1+この値) で売却'],
+    'market.partialSellRatio': ['一度に売る割合', '1=全部'], 'market.maxStockRatio': ['在庫上限の割合', ''],
+    'market.maxBuyPerTick': ['1回の最大購入数', ''], 'market.minBuyQty': ['最小購入数', ''],
+    'market.autoBrokers': ['ブローカー自動雇用', '手数料を5%/人 下げます'],
+    'market.brokerReserveMult': ['雇用するための手持ち倍率', 'ブローカー代(CpSの20分)×この倍率以上あるとき雇用'], 'market.autoOffice': ['オフィス自動拡張', 'Cursor を消費します'],
+    'grimoire.enabled': ['有効', ''], 'grimoire.spells': ['詠唱する呪文', 'カンマ区切り(上から優先) 例: conjure baked goods, hand of fate'],
+    'grimoire.minMagicRatio': ['魔力がこの割合以上で詠唱', '1.0=満タンになったら'], 'grimoire.reserve': ['魔力を残す', ''],
+    'grimoire.allowBackfire': ['暴走を許容', ''],
+    'pantheon.enabled': ['有効', ''], 'pantheon.autoSlot': ['自動配置', ''],
+    'pantheon.loadout': ['配置する神', 'カンマ3つ = ダイヤ/ルビー/ヒスイ'],
+    'pantheon.respectSwaps': ['スワップ回数を守る', 'OFFにするとゲームの制限を超えて入れ替えます'],
+    'dragon.enabled': ['有効', ''], 'dragon.autoTrain': ['自動育成', ''], 'dragon.aura1': ['オーラ1', ''], 'dragon.aura2': ['オーラ2', ''],
+    'santa.enabled': ['有効', ''], 'santa.autoUpgrade': ['自動レベル上げ', ''], 'santa.maxLevel': ['最大レベル', ''], 'santa.maxCostRatio': ['コスト上限(手持ち比)', ''],
+    'season.enabled': ['有効', ''], 'season.preferred': ['希望する季節', 'christmas/valentines/fools/easter/halloween'],
+    'season.autoSwitch': ['自動切替', ''], 'season.maxCostRatio': ['コスト上限', ''],
+    'ascend.enabled': ['有効', ''], 'ascend.mode': ['判定方法', 'percent=現在の何%増えたら転生 / absolute=指定値'],
+    'ascend.percent': ['増加率(%)', '例: 50 = 今の1.5倍になったら転生'], 'ascend.minGain': ['最低獲得チップ', ''],
+    'ascend.minAbsolutePrestige': ['転生後の最低プレステージ', ''], 'ascend.cooldownSec': ['クールダウン(秒)', ''],
+    'ascend.maxPerDay': ['1日の最大回数', '0=無制限'], 'ascend.backupFirst': ['転生前にバックアップ', '強く推奨'],
+    'ascend.backupTimeoutSec': ['バックアップ待ち上限(秒)', ''], 'ascend.autoReincarnate': ['自動で現世に戻る', ''],
+    'ascend.reincarnateDelaySec': ['戻るまでの待機(秒)', '天界ツリー購入に使う時間'], 'ascend.prestigeOnAscend': ['転生中にツリー購入', ''],
+    'prestige.enabled': ['有効', ''], 'prestige.strategy': ['購入順', 'priority=推奨順 / cheapest=安い順'],
+    'prestige.reserveChips': ['残すチップ数', ''], 'prestige.maxPerTick': ['1回の購入数上限', ''],
+    'prestige.blacklist': ['買わない名前', 'カンマ区切り'], 'prestige.permanentUpgrades': ['恒久スロットに入れたいUP', 'カンマ区切り(上から優先)'],
+    'prestige.autoAssignPermanent': ['恒久スロットを自動設定', ''], 'prestige.priorityList': ['優先順位の上書き', '空=組み込みの推奨順'],
+    'housekeep.enabled': ['有効', ''], 'housekeep.closePrompts': ['ダイアログを自動で閉じる', ''],
+    'housekeep.muteSound': ['効果音をミュート', ''], 'housekeep.muteMusic': ['BGMをミュート', ''],
+    'housekeep.reduceParticles': ['パーティクルを減らす', '処理落ち防止'], 'housekeep.keepAwake': ['スリープを抑止', ''],
+    'housekeep.autoResume': ['停止画面から自動復帰', ''], 'housekeep.autosaveSec': ['ゲーム内オートセーブ間隔(秒)', ''],
+    'save.enabled': ['有効', ''], 'save.backupEverySec': ['定期バックアップ間隔(秒)', ''],
+    'save.backupOnAscend': ['転生前にバックアップ', ''], 'save.backupOnExit': ['終了時にバックアップ', ''], 'save.keepBackups': ['保持するバックアップ数', ''],
+  };
+  const MODULE_DESC = {
+    clicker: '大きなクッキーの自動クリック', golden: 'ゴールデンクッキー/トナカイの自動回収',
+    wrinkler: 'シワシワおばあちゃんの管理', upgrade: 'アップグレードの自動購入',
+    building: '施設の自動購入', lump: '砂糖ランプと建物レベル', garden: '庭(農業)の自動化',
+    market: 'クッキー証券取引所', grimoire: 'グリモア(魔法)', pantheon: 'パンテオン(神殿)',
+    dragon: 'ドラゴン(クランブラー)', santa: 'サンタ', season: '季節イベント',
+    ascend: '転生(昇天)', prestige: '天界スキルツリー', housekeep: '保守・安定化',
+    save: 'セーブのバックアップ',
+  };
+
+  /* ================================================================== */
+  /* 状態                                                                */
+  /* ================================================================== */
+  let S = null;             // /api/state の data
+  let CFG = null;           // 設定
+  let gardenSel = null;     // 選択中のマス
+  let gardenActiveSeed = null; // BOTが現在自動栽培/解放レシピで選択している種
+  let prestigeFilter = false;
+  let chartData = { t: [], cookies: [], cps: [] };
+
+  let refreshTimer = null;
+  function refreshSoon() { clearTimeout(refreshTimer); refreshTimer = setTimeout(poll, 250); }
+
+  async function poll() {
+    try {
+      const r = await get('/api/state');
+      if (!r || !r.ok) { setStatus('bad', '通信エラー'); return; }
+      S = r.data;
+      renderTop();
+      renderTab();
+      renderTicker();
+    } catch (e) {
+      setStatus('bad', 'オフライン');
+    }
+  }
+
+  function setStatus(kind, text) {
+    const p = $('#statusPill');
+    p.className = 'pill ' + kind;
+    p.textContent = text;
+  }
+
+  /* ================================================================== */
+  /* 上部 KPI                                                            */
+  /* ================================================================== */
+  function renderTop() {
+    if (!S) return;
+    const s = S.snapshot || {};
+    $('#kCookies').textContent = fmt(s.cookies);
+    $('#kCps').textContent = fmt(s.cookiesPs);
+    $('#kMouse').textContent = fmt(s.mouseCps);
+    $('#kPrestige').textContent = fmt(s.prestige);
+    $('#kChips').textContent = fmt(s.heavenlyChips);
+    $('#kLumps').textContent = fmt(s.lumps);
+    $('#kUptime').textContent = dur(S.uptimeSec);
+    $('#verTag').textContent = (s.version ? 'game v' + s.version : '') + '  /  bot v' + (s.botVersion || '1.0');
+
+    if (!S.running) setStatus('bad', '停止中');
+    else if (!S.gameReady) setStatus('warn', 'ゲーム待機中');
+    else if (s.onAscend) setStatus('warn', '転生画面');
+    else setStatus('ok', '稼働中');
+    $('#masterSw').checked = !!(CFG && CFG.master);
+    renderBanner(S, s);
+  }
+
+  function renderBanner(S, s) {
+    const b = $('#banner'); if (!b) return;
+    const ls = S.loadState || '';
+    let msg = '', bad = false;
+    if (!S.running) { msg = '⏹ ボットが停止しています。start_bot.bat で起動し直してください。'; bad = true; }
+    else if (ls === 'challenge') {
+      msg = '🔐 ゲームサイトが人間認証 (Cloudflare「Just a moment...」) を表示しています。'
+          + '開いているブラウザ窓のチェックボックスを一度クリックすると、以降はプロファイルに保存されて自動で通ります。'
+          + ' ※ headless 起動では認証を通せないことがあります。';
+    } else if (!S.gameReady) {
+      msg = '⏳ ゲームの読み込みを待っています… (state=' + (ls || '?') + ')　'
+          + (S.lastError ? '最終エラー: ' + S.lastError : '');
+    } else if (S.engine && S.engine.consecutiveErrors > 3) {
+      msg = '⚠ ページとの通信が不安定です (連続エラー ' + S.engine.consecutiveErrors + ')。自動で復帰を試みます。';
+    } else if (s.pendingAscend) {
+      msg = '✨ 転生の準備中です — セーブのバックアップを取ってから実行します (+' + fmt(s.pendingAscend.gain) + ' チップ)';
+    }
+    if (msg) { b.textContent = msg; b.className = 'show' + (bad ? ' bad' : ''); }
+    else { b.className = 'hidden'; b.textContent = ''; }
+  }
+
+  /* ================================================================== */
+  /* チャート                                                             */
+  /* ================================================================== */
+  function drawChart() {
+    const c = $('#chart'); if (!c) return;
+    const dpr = window.devicePixelRatio || 1;
+    const W = c.clientWidth || 600, H = 190;
+    c.width = W * dpr; c.height = H * dpr;
+    const x = c.getContext('2d');
+    x.setTransform(dpr, 0, 0, dpr, 0, 0);
+    x.clearRect(0, 0, W, H);
+    const h = (S && S.history) || { t: [], cookies: [], cps: [] };
+    if (!h.t || h.t.length < 2) {
+      x.fillStyle = '#5f6880'; x.font = '12px sans-serif'; x.textAlign = 'center';
+      x.fillText('データを収集中です…', W / 2, H / 2); return;
+    }
+    const pad = { l: 46, r: 46, t: 10, b: 18 };
+    const iw = W - pad.l - pad.r, ih = H - pad.t - pad.b;
+    const series = [
+      { d: h.cookies, col: '#f0b26b', axis: 'l', label: 'クッキー' },
+      { d: h.cps, col: '#6bd0f0', axis: 'r', label: 'CpS' },
+    ];
+    // グリッド
+    x.strokeStyle = '#1d2230'; x.lineWidth = 1;
+    for (let i = 0; i <= 4; i++) {
+      const y = pad.t + ih * i / 4;
+      x.beginPath(); x.moveTo(pad.l, y); x.lineTo(pad.l + iw, y); x.stroke();
+    }
+    series.forEach(se => {
+      const vals = se.d.slice(-400).filter(v => isFinite(v));
+      if (!vals.length) return;
+      let mn = Math.min(...vals), mx = Math.max(...vals);
+      if (mx - mn < 1e-9) { mx = mn + Math.max(1, Math.abs(mn) * 0.1); }
+      const pts = se.d.slice(-400);
+      x.strokeStyle = se.col; x.lineWidth = 1.7; x.beginPath();
+      pts.forEach((v, i) => {
+        const px = pad.l + iw * i / Math.max(1, pts.length - 1);
+        const py = pad.t + ih - ih * (clampN(v, mn, mx) - mn) / (mx - mn);
+        i ? x.lineTo(px, py) : x.moveTo(px, py);
+      });
+      x.stroke();
+      x.fillStyle = se.col; x.font = '10px sans-serif';
+      x.textAlign = se.axis === 'l' ? 'left' : 'right';
+      const lx = se.axis === 'l' ? 4 : W - 4;
+      x.fillText(fmt(mx), lx, pad.t + 9);
+      x.fillText(fmt(mn), lx, pad.t + ih);
+    });
+    x.fillStyle = '#5f6880'; x.font = '10px sans-serif'; x.textAlign = 'left';
+    x.fillText('■ クッキー', pad.l, H - 5);
+    x.fillStyle = '#6bd0f0'; x.fillText('■ CpS', pad.l + 78, H - 5);
+  }
+  function clampN(v, a, b) { v = Number(v); if (!isFinite(v)) return a; return Math.max(a, Math.min(b, v)); }
+
+  /* ================================================================== */
+  /* ダッシュボード                                                       */
+  /* ================================================================== */
+  function renderDash() {
+    const s = S.snapshot || {};
+    // モジュールグリッド
+    const g = $('#modGrid');
+    if (g && !g.childElementCount) {
+      Object.keys(MODULES).forEach(k => {
+        const [label, desc, acts] = MODULES[k];
+        const box = el('div', { class: 'mod' });
+        const hd = el('div', { class: 'hd' });
+        hd.appendChild(el('b', {}, label));
+        const sw = el('label', { class: 'sw' });
+        const inp = el('input', { type: 'checkbox' });
+        inp.onchange = async () => {
+          const path = k + '.enabled';
+          await post('/api/config', { patch: setPath({}, path, inp.checked) });
+          await loadCfg();
+          toast(label + ' を ' + (inp.checked ? 'ON' : 'OFF') + ' にしました', 'ok');
+        };
+        sw.appendChild(inp); sw.appendChild(el('i'));
+        hd.appendChild(sw);
+        box.appendChild(hd);
+        box.appendChild(el('div', { class: 'desc' }, desc));
+        const ab = el('div', { class: 'acts' });
+        acts.forEach(([a, args, t]) => {
+          ab.appendChild(el('button', { class: 'small', onclick: () => act(a, args) }, t));
+        });
+        ab.appendChild(el('button', { class: 'small', onclick: () => act('runModuleOnce', { name: schedName(k) }) }, '今すぐ1回'));
+        box.appendChild(ab);
+        box.dataset.mod = k;
+        g.appendChild(box);
+      });
+    }
+    if (g) {
+      $$('.mod', g).forEach(box => {
+        const k = box.dataset.mod;
+        const inp = box.querySelector('input[type=checkbox]');
+        const v = getPath(CFG || {}, k + '.enabled');
+        if (inp && v !== undefined) inp.checked = !!v;
+      });
+    }
+    // クイック操作
+    const qa = $('#quickActions');
+    if (qa && !qa.childElementCount) {
+      QUICK.forEach(([a, args, label]) => qa.appendChild(el('button', { onclick: () => act(a, args) }, label)));
+    }
+    // バフ
+    const bl = $('#buffList');
+    if (bl) {
+      const buffs = s.buffs || [];
+      bl.innerHTML = buffs.length ? buffs.map(b =>
+        `<span class="tag acc" title="${esc(b.name)}">${esc(b.dname || b.name)} ${dur((b.time || 0) / 30)}</span>`).join(' ')
+        : '<span class="muted">なし</span>';
+    }
+    // ゴールデン / シワシワ
+    const sb = $('#shimmerBox');
+    if (sb) {
+      const sh = (s.shimmers || []).map(x => `<span class="tag ${x.wrath ? 'bad' : 'acc'}">${esc(x.type)}${x.wrath ? '(怒り)' : ''}</span>`).join(' ') || '<span class="muted">出現なし</span>';
+      const w = s.wrinklers || {};
+      sb.innerHTML = `
+        <div class="flex">画面内: ${sh}</div>
+        <div style="margin-top:6px">シワシワ: <b>${w.total || 0}</b> 匹 (吸信中 ${w.sucking || 0} / shiny ${w.shiny || 0})</div>
+        <div class="muted">累計回収クッキー: ${fmt(w.sucked)}　累計破裂: ${fmt(s.wrinklersPopped)}</div>
+        <div class="muted">ゴールデンクリック: ${fmt(s.goldenClicks)} / 取り逃し: ${fmt(s.missedGoldenClicks)}</div>`;
+    }
+    // エンジン
+    const eb = $('#engineBox');
+    if (eb) {
+      const e = S.engine || {};
+      const cap = (S.capabilities && S.capabilities.probes) || {};
+      const on = Object.keys(cap).filter(k => cap[k]);
+      const off = Object.keys(cap).filter(k => !cap[k]);
+      eb.innerHTML = `
+        <div>JS呼び出し: ${e.calls || 0} / エラー: ${e.errors || 0} (連続 ${e.consecutiveErrors || 0})</div>
+        <div>ページ再読込: ${e.reloads || 0} 回</div>
+        <div>イベント番号: ${S.lastEventSeq || 0}</div>
+        <div>最終バックアップ: ${S.lastBackup && S.lastBackup.name ? esc(S.lastBackup.name) : '<span class="muted">まだ</span>'}</div>
+        <div>FPS: ${fmt(s.fps, 0)} / ゲーム内部ティック: ${fmt(s.gameT, 0)}</div>
+        <hr class="sep">
+        <div class="muted">利用可能な機能: ${on.map(x => `<span class="tag ok">${esc(x)}</span>`).join(' ')}</div>
+        ${off.length ? `<div class="muted" style="margin-top:4px">未解放: ${off.map(x => `<span class="tag">${esc(x)}</span>`).join(' ')}</div>` : ''}
+        ${S.lastError ? `<hr class="sep"><div class="bad">最終エラー: ${esc(S.lastError)}</div>` : ''}`;
+    }
+    renderBuildingTable($('#bTable'), false);
+    drawChart();
+  }
+
+  function schedName(modKey) {
+    const map = { clicker: 'clicker', golden: 'golden', wrinkler: 'wrinkler', upgrade: 'upgrade', building: 'building', lump: 'lump', garden: 'garden', market: 'market', grimoire: 'grimoire', pantheon: 'pantheon', dragon: 'dragon', santa: 'santa', season: 'season', ascend: 'ascend', prestige: 'ascend', housekeep: 'housekeep' };
+    return map[modKey] || modKey;
+  }
+
+  function renderBuildingTable(tbl, withBuy) {
+    if (!tbl) return;
+    const s = S.snapshot || {};
+    const list = s.buildings || [];
+    let html = '<thead><tr><th>施設</th><th class="r">保有</th><th class="r">Lv</th><th class="r">次の価格</th><th class="r">ミニゲーム</th>';
+    if (withBuy) html += '<th class="c">購入</th>';
+    html += '</tr></thead><tbody>';
+    list.forEach(b => {
+      html += `<tr><td>${esc(b.name)}</td><td class="r">${fmt(b.amount)}</td><td class="r">${b.level}</td>
+        <td class="r">${fmt(b.price)}</td><td class="r">${b.minigame ? (b.minigameReady ? '<span class="tag ok">稼働</span>' : '<span class="tag">Lv必要</span>') : ''}</td>`;
+      if (withBuy) {
+        html += `<td class="c nowrap">
+          <button class="small" data-b="${esc(b.key)}" data-n="1">+1</button>
+          <button class="small" data-b="${esc(b.key)}" data-n="10">+10</button>
+          <button class="small" data-b="${esc(b.key)}" data-n="100">+100</button>
+          <button class="small" data-b="${esc(b.key)}" data-n="-1">最大</button></td>`;
+      }
+      html += '</tr>';
+    });
+    tbl.innerHTML = html + '</tbody>';
+    if (withBuy) $$('button[data-b]', tbl).forEach(btn => btn.onclick = () => act('buyBuilding', { key: btn.dataset.b, count: parseInt(btn.dataset.n, 10) }));
+  }
+
+  /* ================================================================== */
+  /* ストア                                                              */
+  /* ================================================================== */
+  async function renderStore() {
+    renderBuildingTable($('#bTable2'), true);
+    const r = await get('/api/store');
+    const s = (r && r.data && typeof r.data === 'object') ? r.data : {};
+    const list = Array.isArray(s.store) ? s.store : [];
+    $('#storeCount').textContent = list.length + ' 件 / クッキー ' + fmt(s.cookies);
+    const t = $('#uTable');
+    let html = '<thead><tr><th>アップグレード</th><th>種別</th><th class="r">価格</th><th class="c">購入</th></tr></thead><tbody>';
+    list.forEach(u => {
+      html += `<tr><td>${esc(u.name)}</td><td><span class="tag">${esc(u.pool || 'main')}</span>${u.vaulted ? ' <span class="tag warn">保管庫</span>' : ''}</td>
+        <td class="r">${u.priceLumps ? fmt(u.priceLumps) + ' ランプ' : fmt(u.price)}</td>
+        <td class="c"><button class="small" ${u.canBuy ? '' : 'disabled'} data-u="${esc(u.name)}">購入</button></td></tr>`;
+    });
+    t.innerHTML = html + '</tbody>';
+    $$('button[data-u]', t).forEach(b => b.onclick = () => act('buyUpgrade', { name: b.dataset.u }));
+  }
+
+  /* ================================================================== */
+  /* 農業                                                                */
+  /* ================================================================== */
+  const SEED_COLOR = {
+    bakerWheat: '#c8a24a', thumbcorn: '#d9b45f', cronerice: '#e8e2d0', gildmillet: '#e6c65c',
+    clover: '#5fae5f', goldenClover: '#e8cf5a', shimmerlily: '#cfe0f0', elderwort: '#7a6a8a',
+    bakeberry: '#a8456a', chocoroot: '#8a5a34', whiteChocoroot: '#d8cfc0', whiteMildew: '#cfc6b0',
+    brownMold: '#7a5a3a', meddleweed: '#6a7a4a', whiskerbloom: '#c07ab0', chimerose: '#e07a8a',
+    nursetulip: '#e08a9a', drowsyfern: '#4a7a5a', wardlichen: '#8aa0a8', keenmoss: '#5a8a4a',
+    queenbeet: '#8a3a5a', queenbeetLump: '#d05a8a', duketater: '#c08a3a', crumbspore: '#8a7a5a',
+    doughshroom: '#c8c0b0', glovemorel: '#a08a6a', cheapcap: '#8a9ab0', foolBolete: '#b09a7a',
+    wrinklegill: '#6a7a9a', greenRot: '#6aa05a', shriekbulb: '#a04a4a', tidygrass: '#7ac07a',
+    everdaisy: '#f0f0e0', ichorpuff: '#b0a0c0',
+  };
+  async function renderGarden() {
+    const r = await get('/api/garden');
+    const g = (r && r.data && typeof r.data === 'object') ? r.data : {};
+    gardenActiveSeed = g.activeFarmSeed || (CFG && CFG.garden && CFG.garden.farmSeed) || 'bakerWheat';
+    const grid = $('#gardenGrid');
+    const gardenSection = $('section[data-tab="garden"]');
+    setInteractiveEnabled(gardenSection, !!g.ready);
+    if (!g.ready) {
+      grid.innerHTML = '<div class="muted" style="grid-column:1/7">庭が未解放です。転生後は Farm(農場)をレベル1にすると再び使えるようになります。</div>';
+      $('#gardenSub').textContent = '未解放 (Farm Lv ' + (g.level || 0) + ')';
+      $('#gardenLegend').textContent = '';
+      $('#seedSel').replaceChildren();
+      $('#soilSel').replaceChildren();
+      $('#seedTable').innerHTML = '<tbody><tr><td class="muted">庭を再解放すると種の一覧が表示されます。</td></tr></tbody>';
+      $('#seedCount').textContent = '未解放';
+      $('#gardenPlan').textContent = 'ミニゲーム未解放のため操作できません。';
+      return;
+    }
+    $('#gardenSub').textContent = `Lv${g.level} / 農場${fmt(g.farms)} / 種 ${g.unlocked}/${g.total} / 土:${esc(g.soil)} / 次回成長 ${Math.round(g.nextStepIn || 0)}秒${g.freeze ? ' / 凍結中' : ''}`;
+
+    // グリッド
+    const plot = g.plot || [];
+    grid.innerHTML = '';
+    const map = {};
+    plot.forEach(t => { map[t.x + ',' + t.y] = t; });
+    for (let y = 0; y < 6; y++) for (let x = 0; x < 6; x++) {
+      const t = map[x + ',' + y];
+      const d = el('div', { class: 'tile' + (!t ? ' locked' : (t.empty ? ' empty' : '') + (t && t.mature ? ' mat' : '')) });
+      d.dataset.xy = x + ',' + y;
+      if (t && !t.empty) {
+        d.style.background = (SEED_COLOR[t.key] || '#556') + '33';
+        d.style.borderColor = SEED_COLOR[t.key] || '#556';
+        d.innerHTML = `<div class="pn">${esc((t.name || t.key || '').split(' ')[0])}</div>
+          ${t.weed ? '<div class="dot">雑草</div>' : ''}
+          <div class="ag"><i style="width:${Math.min(100, Math.round((t.age / 100) * 100))}%;background:${t.mature ? 'var(--ok)' : 'var(--acc2)'}"></i></div>`;
+        d.title = `${t.name} / age ${Math.round(t.age)} / mature ${Math.round(t.mature ? 1 : 0)}`;
+      } else if (!t) {
+        d.title = '未解放のマス(農場レベルが必要)';
+      } else {
+        d.title = '空きマス';
+      }
+      if (gardenSel === x + ',' + y) d.classList.add('sel');
+      d.onclick = () => onTile(x, y, t);
+      grid.appendChild(d);
+    }
+    // 凡例
+    const lg = $('#gardenLegend');
+    const seen = {};
+    plot.forEach(t => { if (!t.empty) seen[t.key] = t.name; });
+    lg.innerHTML = Object.keys(seen).map(k => `<span><i style="display:inline-block;width:9px;height:9px;border-radius:2px;background:${SEED_COLOR[k] || '#556'}"></i> ${esc(seen[k])}</span>`).join(' ');
+
+    // 種セレクト
+    const seeds = (g.seeds || []).filter(s => s.unlocked && s.plantable && !s.weed);
+    const sel = $('#seedSel');
+    const cur = sel.value;
+    const autoOn = !!(CFG && CFG.garden && (CFG.garden.autoSeedSwitch !== false || CFG.garden.farmSeed === 'auto'));
+    sel.innerHTML = '<option value="__auto__">自動切替（成熟後に次の種へ）</option>' +
+      seeds.map(s => `<option value="${esc(s.key)}">${esc(s.name)} (植栽コスト ${fmt(s.cost)})</option>`).join('');
+    if (autoOn) sel.value = '__auto__';
+    else if (cur && seeds.some(s => s.key === cur)) sel.value = cur;
+    else if ((CFG && CFG.garden && CFG.garden.farmSeed) && seeds.some(s => s.key === CFG.garden.farmSeed)) sel.value = CFG.garden.farmSeed;
+    else sel.value = '__auto__';
+
+    // 土セレクト
+    const ss = $('#soilSel');
+    const curS = ss.value;
+    ss.innerHTML = (g.soils || []).map(s => `<option value="${esc(s.key)}" ${s.available ? '' : 'disabled'}>${esc(s.name)} (${s.tick}分 / 農場${s.req})</option>`).join('');
+    if (g.soil && (g.soils || []).some(s => s.key === g.soil)) ss.value = g.soil; else if (curS) ss.value = curS;
+
+    // 種一覧テーブル
+    const st = $('#seedTable');
+    $('#seedCount').textContent = `${g.unlocked} / ${g.total} 種類`;
+    let html = '<thead><tr><th>種</th><th class="c">状態</th><th class="r">植栽コスト</th><th class="r">成熟</th><th>変異条件</th></tr></thead><tbody>';
+    (g.seeds || []).forEach(s => {
+      html += `<tr><td><i style="display:inline-block;width:8px;height:8px;border-radius:2px;background:${SEED_COLOR[s.key] || '#556'};margin-right:5px"></i>${esc(s.name)}
+        ${s.weed ? '<span class="tag warn">雑草</span>' : ''}${s.worth ? '<span class="tag ok">収穫価値</span>' : ''}</td>
+        <td class="c">${s.unlocked ? '<span class="tag ok">解放済</span>' : '<span class="tag bad">未解放</span>'}</td>
+        <td class="r">${fmt(s.cost)}</td><td class="r">${s.mature}</td>
+        <td class="muted">${esc(recipeText(s.key))}</td></tr>`;
+    });
+    st.innerHTML = html + '</tbody>';
+
+    // 計画
+    const p = g.plan || {};
+    const seedNames = Object.fromEntries((g.seeds || []).map(s => [s.key, s.name || s.key]));
+    const recipeSeeds = (p.autoPlantSeeds || []).map(n => `${seedNames[n.key] || n.key}×${Math.max(n.total || 0, n.mature || 0)}${n.mature ? `（成熟${n.mature}）` : ''}`).join('、');
+    const recipeProgress = (p.recipeProgress || []).map(n => `${seedNames[n.key] || n.key}: ${n.haveTotal}/${n.needTotal}株（成熟 ${n.haveMature}/${n.needMature}）`).join('、');
+    $('#gardenPlan').innerHTML = `
+      <div>モード: <b>${esc((CFG && CFG.garden && CFG.garden.mode) || 'auto')}</b></div>
+      <div>自動種切替: <b>${g.autoSeedSwitch ? 'ON' : 'OFF'}</b> / 現在の自動選択: <b>${esc(seedNames[g.activeFarmSeed] || g.activeFarmSeed || '未選択')}</b> / 切替回数: ${g.seedSwitches || 0}</div>
+      <div>解放対象: <b>${esc(p.target || 'なし')}</b> / 段階: ${esc(p.phase || '-')} / 再試行: ${p.attempts || 0}</div>
+      <div>自動植栽するレシピ種: ${esc(recipeSeeds || '通常栽培または待機中')}</div>
+      ${recipeProgress ? `<div>レシピ進捗（中心マスの隣接範囲）: ${esc(recipeProgress)}</div>` : ''}
+      <div class="muted">unlockモードでは変異に必要な材料種へ自動切替し、通常栽培では現在の種がすべて成熟した後に次の種へ進みます。</div>
+      <div>予約マス: ${p.reserved || 0} / 対象開始からの経過: ${p.since ? dur((Date.now() - p.since) / 1000) : '-'}</div>
+      <div class="muted">待機方針: ${esc(p.waitPolicy || '状態を確認中')}（庭の変異はゲーム内ティックで進むため、長い待機だけでは計画をリセットしません）</div>
+      <div>累計収穫: ${fmt(g.harvests)} / 現在の株数: ${g.plants}</div>
+      <div class="muted">未解放の種: ${esc((g.missingSeeds || []).join(', ') || 'なし 🎉')}</div>`;
+  }
+
+  const RECIPE_TEXT = {
+    thumbcorn: 'bakerWheat×2(成熟)', cronerice: 'bakerWheat+thumbcorn', bakeberry: 'bakerWheat×2(成熟/低確率)',
+    gildmillet: 'cronerice+thumbcorn', clover: 'bakerWheat+gildmillet', goldenClover: 'clover×4(成熟)',
+    shimmerlily: 'clover+gildmillet', chocoroot: 'bakerWheat(成熟)+brownMold', whiteChocoroot: 'chocoroot(成熟)+whiteMildew',
+    brownMold: 'whiteMildew(成熟) / meddleweedを引き抜く', whiteMildew: 'brownMold(成熟) / meddleweedを引き抜く',
+    whiskerbloom: 'shimmerlily+whiteChocoroot', chimerose: 'shimmerlily+whiskerbloom', nursetulip: 'whiskerbloom×2',
+    drowsyfern: 'chocoroot+keenmoss', wardlichen: 'cronerice+keenmoss', keenmoss: 'greenRot+brownMold',
+    greenRot: 'whiteMildew+clover', queenbeet: 'chocoroot+bakeberry', duketater: 'queenbeet×2(成熟/低確率)',
+    queenbeetLump: 'queenbeet×8(成熟/低確率)', crumbspore: 'meddleweedを引き抜く / 自己増殖',
+    glovemorel: 'crumbspore+thumbcorn', cheapcap: 'crumbspore+shimmerlily', foolBolete: 'doughshroom+greenRot',
+    doughshroom: 'crumbspore×2(成熟)', wrinklegill: 'crumbspore+brownMold', elderwort: 'shimmerlily+cronerice',
+    shriekbulb: 'wrinklegill+elderwort', tidygrass: 'bakerWheat+whiteChocoroot', everdaisy: 'tidygrass×3+elderwort×3',
+    ichorpuff: 'elderwort+crumbspore', meddleweed: '孤立した空きマスに自然発生',
+  };
+  function recipeText(k) { return RECIPE_TEXT[k] || ''; }
+
+  async function onTile(x, y, t) {
+    if (!t) return;
+    if (!t.empty) { await act('gardenHarvestAt', { x, y }, true); toast(`${t.name} を収穫しました`, 'ok'); }
+    else {
+      const selectedSeed = $('#seedSel').value;
+      const seed = selectedSeed === '__auto__' ? gardenActiveSeed : selectedSeed;
+      if (!seed || seed === '__auto__') return toast('自動選択中の種がまだ決まっていません', 'bad');
+      await act('gardenPlant', { seed, x, y }, true);
+      toast(`${seed} を (${x},${y}) に植えました`, 'ok');
+    }
+    renderGarden();
+  }
+
+  /* ================================================================== */
+  /* 取引所                                                              */
+  /* ================================================================== */
+  async function renderMarket() {
+    const r = await get('/api/market');
+    const m = (r && r.data && typeof r.data === 'object') ? r.data : {};
+    const t = $('#mTable');
+    const marketSection = $('section[data-tab="market"]');
+    setInteractiveEnabled(marketSection, !!m.ready);
+    if (!m.ready) {
+      t.innerHTML = '<tbody><tr><td class="muted">取引所が未解放です。転生後は Bank(銀行)をレベル1にすると再び使えるようになります。</td></tr></tbody>';
+      $('#marketSub').textContent = '未解放 (Bank Lv ' + (m.level || 0) + ')';
+      $('#marketCfg').innerHTML = '<div class="muted">取引所は未解放です。設定・売買操作はミニゲームの再解放後に利用できます。</div>';
+      $('#marketDiag').textContent = '自動取引: 未解放';
+      return;
+    }
+    $('#marketSub').textContent = `オフィスLv${m.officeLevel} / ブローカー ${m.brokers}/${m.maxBrokers} / 手数料 ${((m.overhead - 1) * 100).toFixed(1)}% / 損益 ${fmt(m.profit)} CpS秒 / 次の値動き ${Math.max(0, Math.round(60 - ((m.ticks || 0) % 60)))}秒`;
+    const ad = m.automation || {};
+    $('#marketDiag').textContent = `自動取引: ${ad.enabled ? '有効' : '停止'} / 判定回数: ${ad.runs || 0} / 成立購入: ${fmt(ad.buys || 0)}株 / 成立売却: ${fmt(ad.sells || 0)}株 / 最終操作: ${ad.lastAction || 'なし'} / 判定: ${ad.lastReason || '未実行'}`;
+    let html = '<thead><tr><th>銘柄</th><th class="r">価格</th><th class="r">基準</th><th>トレンド</th><th>推移</th><th class="r">保有/上限</th><th class="r">買値平均</th><th class="c">売買</th></tr></thead><tbody>';
+    (m.items || []).forEach(it => {
+      const modeCol = { 0: '', 1: 'good', 2: 'bad', 3: 'good', 4: 'bad', 5: 'warn' }[it.mode] || '';
+      html += `<tr${it.hidden ? ' style="opacity:.55"' : ''}>
+        <td>${esc(it.name)} <span class="tag">${esc(it.symbol)}</span></td>
+        <td class="r"><b>$${it.val}</b><br><span class="muted">${it.d >= 0 ? '+' : ''}${it.d.toFixed(3)}</span></td>
+        <td class="r muted">$${it.restingVal}</td>
+        <td><span class="tag ${modeCol}">${esc(it.modeName)}</span></td>
+        <td>${spark(it.history, it.val)}</td>
+        <td class="r">${fmt(it.stock)} / ${fmt(it.maxStock)}</td>
+        <td class="r">${it.position.qty ? '$' + it.position.avg : '<span class="muted">-</span>'}</td>
+        <td class="c nowrap">
+          <button class="small" data-buy="${it.id}" data-n="1">買1</button>
+          <button class="small" data-buy="${it.id}" data-n="100">買100</button>
+          <button class="small" data-sell="${it.id}" data-n="1">売1</button>
+          <button class="small" data-sell="${it.id}" data-n="10000">全売</button>
+        </td></tr>`;
+    });
+    t.innerHTML = html + '</tbody>';
+    $$('button[data-buy]', t).forEach(b => b.onclick = () => act('marketBuy', { id: +b.dataset.buy, qty: +b.dataset.n }));
+    $$('button[data-sell]', t).forEach(b => b.onclick = () => act('marketSell', { id: +b.dataset.sell, qty: +b.dataset.n }));
+    renderCfgInto($('#marketCfg'), 'market');
+  }
+
+  function spark(hist, cur) {
+    if (!hist || hist.length < 2) return '';
+    const w = 90, h = 22;
+    const mn = Math.min(...hist), mx = Math.max(...hist);
+    const rng = (mx - mn) || 1;
+    const pts = hist.map((v, i) => `${(i / (hist.length - 1) * w).toFixed(1)},${(h - (v - mn) / rng * h).toFixed(1)}`).join(' ');
+    const col = hist[hist.length - 1] >= hist[0] ? '#5fd08a' : '#f07a6b';
+    return `<svg class="spark" width="${w}" height="${h}"><polyline points="${pts}" fill="none" stroke="${col}" stroke-width="1.4"/></svg>`;
+  }
+
+  /* ================================================================== */
+  /* 神殿 / 魔法                                                          */
+  /* ================================================================== */
+  async function renderTemple() {
+    const s = S.snapshot || {};
+    const p = (s.mg && s.mg.pantheon) || {};
+    const box = $('#panBox');
+    const pantheonCard = box.closest('.card');
+    const godCard = $('#godTable').closest('.card');
+    setInteractiveEnabled(pantheonCard, !!p.ready);
+    setInteractiveEnabled(godCard, !!p.ready);
+    if (!p.ready) {
+      $('#panSub').textContent = '未解放 (Temple Lv ' + (p.level || 0) + ')';
+      box.innerHTML = '<span class="muted">神殿が未解放です。転生後は Temple(神殿)をレベル1にすると再び使えるようになります。</span>';
+      $('#godTable').innerHTML = '<tbody><tr><td class="muted">神殿を再解放すると神の一覧が表示されます。</td></tr></tbody>';
+    } else {
+      $('#panSub').textContent = `礼拝スワップ ${p.swaps}/3 (次回 ${dur(p.swapInSec)})`;
+      const names = p.slotNames || ['Diamond', 'Ruby', 'Jade'];
+      let html = `<div class="hint mono">自動配置: ${p.enabled && p.autoSlot ? 'ON' : 'OFF'} / 判定: ${esc(p.lastReason || '未実行')}${p.lastAction ? ' / 最終操作: ' + esc(p.lastAction) : ''} / 配置操作 ${p.moved || 0}回</div><div class="grid g3">`;
+      for (let i = 0; i < 3; i++) {
+        const gid = p.slots[i];
+        const god = gid >= 0 ? (p.gods || []).find(x => x.id === gid) : null;
+        html += `<div class="mod"><div class="hd"><b>${esc(names[i])}</b></div>
+          <div class="desc">${god ? '<b>' + esc(god.name) + '</b><br>' + esc(god.effect) : '<span class="muted">空</span>'}</div>
+          <div class="acts"><select data-slot="${i}" class="godsel">
+            <option value="">— 空にする —</option>
+            ${(p.gods || []).map(g => `<option value="${esc(g.key || g.id)}" ${god && (god.key == (g.key || g.id) || god.id === gid) ? 'selected' : ''}>${esc(g.name)}</option>`).join('')}
+          </select></div></div>`;
+      }
+      html += '</div>';
+      box.innerHTML = html;
+      $$('.godsel', box).forEach(sel => sel.onchange = async () => {
+        const slot = +sel.dataset.slot;
+        if (!sel.value) { await act('slotGod', { god: (p.slots[slot]), slot: -1 }); await renderTemple(); return; }
+        await act('slotGod', { god: sel.value, slot });
+        renderTemple();
+      });
+      let t2 = '<thead><tr><th>神</th><th class="c">配置</th><th>効果(ダイヤ枠)</th></tr></thead><tbody>';
+      (p.gods || []).forEach(g => {
+        t2 += `<tr><td>${esc(g.name)}</td><td class="c">${g.slot >= 0 ? '<span class="tag ok">' + esc((p.slotNames || [])[g.slot] || g.slot) + '</span>' : '<span class="tag">-</span>'}</td>
+          <td class="muted">${esc(g.effect)}</td></tr>`;
+      });
+      $('#godTable').innerHTML = t2 + '</tbody>';
+    }
+
+    const gr = (s.mg && s.mg.grimoire) || {};
+    const st = $('#spellTable');
+    const grimoireCard = st.closest('.card');
+    setInteractiveEnabled(grimoireCard, !!gr.ready);
+    if (!gr.ready) {
+      $('#griSub').textContent = '未解放 (Wizard tower Lv ' + (gr.level || 0) + ')';
+      st.innerHTML = '<tbody><tr><td class="muted">魔法書が未解放です。転生後は Wizard tower(魔法使いの塔)をレベル1にすると再び使えるようになります。</td></tr></tbody>';
+    } else {
+      $('#griSub').textContent = `魔力 ${gr.magic} / ${gr.magicM}　詠唱 ${fmt(gr.spellsCastTotal)}回 / 直近: ${gr.lastSpell ? esc(gr.lastSpell) + ' (' + esc(gr.lastResult || '-') + ')' : (gr.lastResult || '待機')}`;
+      let html = '<thead><tr><th>呪文</th><th class="r">魔力</th><th class="r">暴走率</th><th class="c"></th></tr></thead><tbody>';
+      (gr.spells || []).forEach(sp => {
+        html += `<tr><td>${esc(sp.name)}</td><td class="r">${fmt(sp.cost)}</td><td class="r">${(sp.failChance * 100).toFixed(1)}%</td>
+          <td class="c"><button class="small" ${sp.castable ? '' : 'disabled'} data-sp="${esc(sp.name)}">詠唱</button></td></tr>`;
+      });
+      st.innerHTML = html + '</tbody>';
+      $$('button[data-sp]', st).forEach(b => b.onclick = () => act('castSpell', { spell: b.dataset.sp }));
+    }
+    renderMisc();
+  }
+
+  async function renderMisc() {
+    const s = S.snapshot || {};
+    const box = $('#miscBox'); if (!box) return;
+    const aur = await get('/api/dragon-auras');
+    const auras = Array.isArray(aur && aur.data) ? aur.data : [];
+    const sea = await get('/api/seasons');
+    const seasons = Array.isArray(sea && sea.data) ? sea.data : [];
+    const opts = auras.map(a => {
+      const unlocked = !!s.dragonUnlocked && !!a.unlocked;
+      const suffix = !s.dragonUnlocked ? ' (ドラゴン未解放)' : (a.unlocked ? '' : ' (要Lv' + (a.index + 4) + ')');
+      return `<option value="${esc(a.name)}" ${unlocked ? '' : 'disabled'}>${esc(a.name)}${suffix}</option>`;
+    }).join('');
+    box.innerHTML = `
+      <div class="mod"><div class="hd"><b>🐉 ドラゴン</b><span class="tag ${s.dragonUnlocked ? 'ok' : 'warn'}">${s.dragonUnlocked ? '解放済み' : '未解放'}</span><span class="tag acc">Lv ${s.dragonLevel || 0} / ${s.dragonLevelsMax || 0}</span></div>
+        <div class="desc">${s.dragonUnlocked
+          ? (s.dragonSecondAuraUnlocked
+            ? 'ドラゴンは解放済みです。2つのオーラ枠を設定できます。育成では建物を消費する段階があります。'
+            : 'ドラゴンは解放済みです。2つ目のオーラ枠は最大レベル到達後に解放されます。育成では建物を消費する段階があります。')
+          : ('未解放です。天界アップグレード「How to bake your dragon」を取得し、通常プレイで「A crumbly egg」を購入してください。' + ((s.dragonAura2Name && s.dragonAura2Name !== 'No aura') ? ' セーブデータには2枠目のオーラ「' + esc(s.dragonAura2Name) + '」が残っています。表示中の値を自動で巻き戻しません。' : ''))}</div>
+        <div class="acts">
+          <select id="aura1" ${s.dragonUnlocked ? '' : 'disabled'}>${opts}</select>
+          <select id="aura2" ${s.dragonSecondAuraUnlocked ? '' : 'disabled'}>${opts}</select>
+          <button class="small" id="setAura" ${s.dragonUnlocked ? '' : 'disabled'}>オーラ設定</button>
+          <button class="small" id="trainDragon" ${s.dragonUnlocked && (s.dragonLevel || 0) < (s.dragonLevelsMax || 0) ? '' : 'disabled'}>育成する</button>
+        </div></div>
+      <div class="mod" style="margin-top:8px"><div class="hd"><b>🎅 サンタ</b>
+        <span class="tag ${s.santaUnlocked ? 'ok' : 'warn'}">${s.santaUnlocked ? '解放済み' : '未解放'}</span>
+        <span class="tag acc">Lv ${s.santaLevel || 0}/14</span></div>
+        <div class="desc">${s.santaUnlocked
+          ? 'サンタは解放済みです。自動レベル上げの設定に従って動作します。'
+          : ((s.santaLevel || 0) > 0
+            ? '未解放ですが、現在のレベルはセーブデータに残っています。修正は今後の強化を止めますが、既存レベルを自動で巻き戻しません。'
+            : '未解放です。「A festive hat」を購入するとサンタが解放されます。')}</div>
+        <div class="acts"><button class="small" id="santaUp" ${s.santaUnlocked ? '' : 'disabled'} title="${s.santaUnlocked ? 'サンタを1レベル強化' : '未解放：「A festive hat」を購入してください'}">レベルアップ</button></div></div>
+      <div class="mod" style="margin-top:8px"><div class="hd"><b>🎄 季節</b><span class="tag acc">${esc(s.season || 'なし')}</span></div>
+        <div class="desc">残り ${dur((s.seasonT || 0) / 30)} / 切替回数 ${s.seasonUses || 0}</div>
+        <div class="acts">${seasons.map(x => `<button class="small" data-season="${esc(x.key)}" ${x.active ? 'disabled' : ''}>${esc(x.name)} ${x.price ? '(' + fmt(x.price) + ')' : ''}</button>`).join('')}</div></div>`;
+    const a1 = $('#aura1'), a2 = $('#aura2');
+    if (s.dragonAuraName) a1.value = s.dragonAuraName;
+    if (s.dragonAura2Name) a2.value = s.dragonAura2Name;
+    $('#setAura').onclick = async () => {
+      const current = S.snapshot || {};
+      if (!current.dragonUnlocked) return;
+      await act('setAura', { slot: 0, aura: a1.value });
+      if (current.dragonSecondAuraUnlocked) await act('setAura', { slot: 1, aura: a2.value });
+    };
+    $('#trainDragon').onclick = () => act('trainDragon');
+    $('#santaUp').onclick = () => act('upgradeSanta');
+    $$('button[data-season]', box).forEach(b => b.onclick = () => act('switchSeason', { season: b.dataset.season }));
+  }
+
+  /* ================================================================== */
+  /* 転生                                                                */
+  /* ================================================================== */
+  async function renderAscend() {
+    const s = S.snapshot || {};
+    const info = s.ascendInfo || {};
+    const box = $('#ascendBox');
+    const cfgA = (CFG && CFG.ascend) || {};
+    box.innerHTML = `
+      <table>
+        <tr><td class="muted">現在のプレステージ</td><td class="r big">${fmt(info.prestige)}</td></tr>
+        <tr><td class="muted">今すぐ転生すると</td><td class="r big acc">${fmt(info.projected)}</td></tr>
+        <tr><td class="muted">獲得チップ</td><td class="r big good">+${fmt(info.gain)}</td></tr>
+        <tr><td class="muted">転生に必要な獲得数</td><td class="r">${fmt(info.requiredGain)}</td></tr>
+        <tr><td class="muted">手持ちチップ / 使用済</td><td class="r">${fmt(s.heavenlyChips)} / ${fmt(s.heavenlyChipsSpent)}</td></tr>
+        <tr><td class="muted">累計転生回数</td><td class="r">${fmt(s.ascensions)}</td></tr>
+        <tr><td class="muted">今日転生した回数</td><td class="r">${info.ascendsToday || 0}${cfgA.maxPerDay ? ' / ' + cfgA.maxPerDay : ''}</td></tr>
+      </table>
+      <div class="hint">設定: ${esc(cfgA.mode || 'percent')} / +${cfgA.percent || 0}% / 最低 +${cfgA.minGain || 0} / バックアップ ${cfgA.backupFirst ? 'あり' : 'なし'}</div>
+      ${s.pendingAscend ? `<div class="warn">⚠ 転生待ち(バックアップ中): ${esc(s.pendingAscend.reason || '')} / ${s.pendingAscend.waitedSec}秒経過</div>` : ''}
+      <div class="flex" style="margin-top:8px">
+        <button class="pri" id="btnAscend">今すぐ転生する</button>
+        <button id="btnReinc">現世に戻る</button>
+      </div>`;
+    $('#btnAscend').onclick = () => { if (confirm('本当に転生しますか？\n(進行はリセットされ、天界チップとプレステージに変わります)')) act('ascendNow', { reason: 'manual from admin panel' }); };
+    $('#btnReinc').onclick = () => act('reincarnateNow', { reason: 'manual' });
+
+    // 恒久スロット
+    const pb = $('#permBox');
+    const perms = s.permanentUpgrades || [];
+    pb.innerHTML = perms.map(p => `
+      <div class="field"><label>スロット ${p.slot + 1}<small>${p.name ? '現在: ' + esc(p.name) : '未設定'}</small></label>
+      <span class="ctl"><input class="perma" data-slot="${p.slot}" value="${esc(p.name || '')}" placeholder="アップグレード名" style="width:170px"></span></div>`).join('')
+      + '<div class="hint">名前を入れて [設定] を押すと恒久アップグレード枠に割り当てます。空欄(-1)で解除。</div>'
+      + '<button class="small pri" id="btnPerma">設定</button>';
+    $('#btnPerma').onclick = async () => {
+      for (const inp of $$('.perma', pb)) {
+        const v = inp.value.trim();
+        await act('setPermanentUpgrade', { slot: +inp.dataset.slot, name: v === '' ? -1 : v }, true);
+      }
+      toast('恒久スロットを設定しました', 'ok');
+      renderAscend();
+    };
+
+    // 天界ツリー
+    const r = await get('/api/prestige');
+    const list = Array.isArray(r && r.data) ? r.data : [];
+    const avail = list.filter(x => !x.bought && x.canBePurchased);
+    $('#prestigeSub').textContent = `${list.filter(x => x.bought).length} / ${list.length} 取得済　購入可能 ${avail.length} 件　チップ ${fmt(s.heavenlyChips)}`;
+    const t = $('#pTable');
+    const shown = prestigeFilter ? avail : list;
+    let html = '<thead><tr><th>アップグレード</th><th class="r">チップ</th><th>前提</th><th class="c">状態</th><th class="c"></th></tr></thead><tbody>';
+    shown.forEach(u => {
+      const par = (u.parents || []).map(p => esc(p.name) + (p.bought ? '' : '⚠')).join(', ');
+      html += `<tr style="${u.bought ? 'opacity:.5' : ''}"><td>${esc(u.name)}</td><td class="r">${fmt(u.price)}</td>
+        <td class="muted">${par || '-'}</td>
+        <td class="c">${u.bought ? '<span class="tag ok">取得済</span>' : (u.canBePurchased ? (u.affordable ? '<span class="tag acc">購入可</span>' : '<span class="tag warn">チップ不足</span>') : '<span class="tag">前提未達</span>')}</td>
+        <td class="c">${(!u.bought && u.canBePurchased && u.affordable) ? `<button class="small" data-p="${esc(u.name)}">購入</button>` : ''}</td></tr>`;
+    });
+    t.innerHTML = html + '</tbody>';
+    $$('button[data-p]', t).forEach(b => b.onclick = () => act('buyPrestige', { name: b.dataset.p }));
+  }
+
+  /* ================================================================== */
+  /* ログ                                                                */
+  /* ================================================================== */
+  async function renderLogs(force) {
+    const box = $('#logbox');
+    if (!box) return;
+    if (!box.dataset.init) {
+      const mods = Object.keys(MODULE_LABELS_JP);
+      $('#logModule').innerHTML = '<option value="">全モジュール</option>' + mods.map(m => `<option value="${m}">${MODULE_LABELS_JP[m]} (${m})</option>`).join('');
+      $('#logModule').onchange = () => renderLogs(true);
+      $('#logSearch').oninput = () => { clearTimeout(box.dataset.t); box.dataset.t = setTimeout(() => renderLogs(true), 350); };
+      $('#logRefresh').onclick = () => renderLogs(true);
+      box.dataset.init = '1';
+    }
+    const q = new URLSearchParams({ limit: '400', module: $('#logModule').value || '', q: $('#logSearch').value || '' });
+    const r = await get('/api/logs?' + q.toString());
+    const items = Array.isArray(r && r.data) ? r.data : [];
+    const atBottom = box.scrollTop + box.clientHeight >= box.scrollHeight - 30;
+    box.innerHTML = items.map(it =>
+      `<div class="le${/error|failed/i.test(it.action) ? ' err' : ''}"><span class="ts">${esc(it.ts)}</span> <span class="m">[${esc(it.module_jp)}]</span> <span class="a">${esc(it.action_jp)}</span> ${esc(kv(it.detail))} ${it.result && Object.keys(it.result).length ? '<span class="muted">→ ' + esc(kv(it.result)) + '</span>' : ''}</div>`
+    ).join('') || '<div class="le muted">ログはまだありません</div>';
+    if (atBottom || force) box.scrollTop = 0;
+  }
+  const MODULE_LABELS_JP = {
+    core: 'コア', engine: 'エンジン', server: '管理画面', save: 'セーブ',
+    clicker: 'クリック', golden: 'ゴールデン', wrinkler: 'シワシワ', upgrade: 'UP', building: '施設',
+    lump: 'ランプ', garden: '農業', market: '取引所', grimoire: '魔法', pantheon: '神殿',
+    dragon: 'ドラゴン', santa: 'サンタ', season: '季節', ascend: '転生', prestige: '天界', housekeep: '保守',
+  };
+  function kv(o) {
+    if (!o) return '';
+    return Object.keys(o).filter(k => o[k] !== null && o[k] !== '' && !(Array.isArray(o[k]) && !o[k].length))
+      .map(k => {
+        let v = o[k];
+        if (typeof v === 'number') v = Math.abs(v) >= 10000 ? fmt(v) : (Math.round(v * 1000) / 1000);
+        else if (typeof v === 'object') v = JSON.stringify(v);
+        return `${k}=${v}`;
+      }).join(' ');
+  }
+
+  async function renderLogFiles() {
+    const kind = $('#logKind').value;
+    const r = await get('/api/logs/files?kind=' + kind);
+    const list = Array.isArray(r && r.data) ? r.data : [];
+    $('#logFiles').innerHTML = '<thead><tr><th>ファイル</th><th class="r">サイズ</th><th>更新</th><th class="c"></th></tr></thead><tbody>' +
+      (list.map(f => `<tr><td class="mono">${esc(f.name)}</td><td class="r">${(f.size / 1024).toFixed(1)} KB</td>
+        <td class="muted">${new Date(f.mtime * 1000).toLocaleString('ja-JP')}</td>
+        <td class="c"><a class="small" href="/api/logs/file?kind=${kind}&name=${encodeURIComponent(f.name)}&download=1">ダウンロード</a>
+        <button class="small" data-view="${esc(f.name)}">表示</button></td></tr>`).join('') || '<tr><td colspan="4" class="muted">ファイルがありません</td></tr>') + '</tbody>';
+    $$('button[data-view]', $('#logFiles')).forEach(b => b.onclick = async () => {
+      const rr = await get(`/api/logs/file?kind=${kind}&name=${encodeURIComponent(b.dataset.view)}&tail=400`);
+      const txt = ((rr && rr.data) || {}).text || '';
+      $('#logbox').innerHTML = '<div class="le">' + esc(txt) + '</div>';
+      setTab('logs');
+    });
+  }
+
+  function renderTicker() {
+    const t = $('#ticker');
+    const items = ((S && S.recentEvents) || []);
+    let list = items;
+    if (!list.length) {
+      // /api/logs を叩かなくても済むように、ticker は 2 秒毎に取得
+      if (Date.now() - (renderTicker._at || 0) > 2000) {
+        renderTicker._at = Date.now();
+        get('/api/logs?limit=4').then(r => {
+          const d = (r && r.data) || [];
+          t.innerHTML = d.map(it => `<div class="le"><span class="ts">${esc(it.ts.slice(11))}</span> <span class="m">[${esc(it.module_jp)}]</span> <span class="a">${esc(it.action_jp)}</span> ${esc(kv(it.detail))}</div>`).join('');
+        });
+      }
+      return;
+    }
+    t.innerHTML = list.map(x => `<div class="le">${esc(x)}</div>`).join('');
+  }
+
+  /* ================================================================== */
+  /* セーブ                                                              */
+  /* ================================================================== */
+  async function renderSaves() {
+    const r = await get('/api/saves');
+    const list = Array.isArray(r && r.data) ? r.data : [];
+    $('#saveSub').textContent = `${list.length} 件 / 最新 ${list[0] ? list[0].mtimeStr : '-'}`;
+    $('#sTable').innerHTML = '<thead><tr><th>ファイル</th><th>タグ</th><th class="r">サイズ</th><th>日時</th><th class="c">操作</th></tr></thead><tbody>' +
+      (list.map(f => `<tr><td class="mono">${esc(f.name)}</td><td><span class="tag">${esc(f.tag)}</span></td>
+        <td class="r">${(f.size / 1024).toFixed(1)} KB</td><td class="muted">${esc(f.mtimeStr)}</td>
+        <td class="c nowrap"><a class="small" href="/api/saves/download?name=${encodeURIComponent(f.name)}">DL</a>
+        <button class="small pri" data-restore="${esc(f.name)}">復元</button>
+        <button class="small danger" data-del="${esc(f.name)}">削除</button></td></tr>`).join('') || '<tr><td colspan="5" class="muted">バックアップはまだありません</td></tr>') + '</tbody>';
+    $$('button[data-restore]', $('#sTable')).forEach(b => b.onclick = () => {
+      if (confirm('このセーブで現在の進行を上書きしますか？\n(実行前に自動でバックアップを取ります)')) act('__restore', { name: b.dataset.restore });
+    });
+    $$('button[data-del]', $('#sTable')).forEach(b => b.onclick = () => { if (confirm('削除しますか？')) act('__delete_save', { name: b.dataset.del }); });
+  }
+
+  /* ================================================================== */
+  /* 設定フォーム                                                         */
+  /* ================================================================== */
+  function getPath(o, path) { return path.split('.').reduce((a, k) => (a == null ? a : a[k]), o); }
+  function setPath(o, path, v) {
+    const ks = path.split('.'); let cur = o;
+    for (let i = 0; i < ks.length - 1; i++) { if (!(ks[i] in cur)) cur[ks[i]] = {}; cur = cur[ks[i]]; }
+    cur[ks[ks.length - 1]] = v; return o;
+  }
+
+  function fieldHtml(path, value) {
+    const lab = LABELS[path] || [path.split('.').pop(), ''];
+    const name = lab[0], hint = lab[1];
+    let ctl;
+    if (typeof value === 'boolean') {
+      ctl = `<label class="sw"><input type="checkbox" data-cfg="${path}" ${value ? 'checked' : ''}><i></i></label>`;
+    } else if (Array.isArray(value)) {
+      ctl = `<input type="text" data-cfg="${path}" data-type="array" style="width:230px" value="${esc(value.join(', '))}">`;
+    } else if (typeof value === 'number') {
+      ctl = `<input type="number" step="any" data-cfg="${path}" data-type="number" value="${value}">`;
+    } else if (typeof value === 'object') {
+      // 連想配列は JSON として編集させる (空なら非表示風のヒント)
+      const isEmpty = Object.keys(value).length === 0;
+      ctl = `<input type="text" data-cfg="${path}" data-type="json" style="width:210px"
+              value="${esc(JSON.stringify(value))}" placeholder="${isEmpty ? '{}' : ''}">`;
+    } else {
+      ctl = `<input type="text" data-cfg="${path}" style="width:190px" value="${esc(value)}">`;
+    }
+    return `<div class="field"><label><b>${esc(name)}</b>${hint ? `<small>${esc(hint)}</small>` : ''}</label><span class="ctl">${ctl}</span></div>`;
+  }
+
+  function renderCfgInto(box, section) {
+    if (!box) return;
+    const data = getPath(CFG || {}, section) || {};
+    box.innerHTML = Object.keys(data).map(k => fieldHtml(section + '.' + k, data[k])).join('');
+    wireCfg(box);
+  }
+
+  function wireCfg(root) {
+    $$('[data-cfg]', root).forEach(inp => {
+      const path = inp.dataset.cfg;
+      const commit = async () => {
+        let v;
+        if (inp.type === 'checkbox') v = inp.checked;
+        else if (inp.dataset.type === 'number') v = inp.value === '' ? 0 : Number(inp.value);
+        else if (inp.dataset.type === 'array') v = inp.value.split(',').map(s => s.trim()).filter(s => s !== '');
+        else if (inp.dataset.type === 'json') {
+          try { v = JSON.parse(inp.value || '{}'); } catch (e) { toast('JSON が不正です: ' + path, 'bad'); return; }
+        }
+        else v = inp.value;
+        const patch = setPath({}, path, v);
+        await post('/api/config', { patch });
+        await loadCfg();
+      };
+      inp.onchange = commit;
+      if (inp.type === 'text' || inp.type === 'number') inp.onblur = commit;
+    });
+  }
+
+  const SEC_TITLE = {
+    clicker: '🖱 クリック', golden: '🌟 ゴールデンクッキー', wrinkler: '🐛 シワシワおばあちゃん',
+    upgrade: '⬆️ アップグレード購入', building: '🏭 施設購入', lump: '🍬 砂糖ランプ / 建物レベル',
+    garden: '🌱 農業 (庭)', market: '📈 クッキー取引所', grimoire: '🔮 魔法書 (グリモア)',
+    pantheon: '⛩ 神殿 (パンテオン)', dragon: '🐉 ドラゴン', santa: '🎅 サンタ',
+    season: '🎄 季節イベント', ascend: '✨ 転生 (昇天)', prestige: '🌌 天界スキルツリー',
+    housekeep: '🧹 保守・安定化', save: '💾 セーブのバックアップ',
+  };
+
+  function renderMods() {
+    const g = $('#cfgGrid'); if (!g) return;
+    const sections = ['clicker', 'golden', 'wrinkler', 'upgrade', 'building', 'lump', 'garden', 'market', 'grimoire', 'pantheon', 'dragon', 'santa', 'season', 'ascend', 'prestige', 'housekeep', 'save'];
+    g.innerHTML = sections.map(sec => {
+      const data = getPath(CFG || {}, sec) || {};
+      const title = (SEC_TITLE[sec] || sec) + (MODULE_DESC[sec] ? ' — ' + MODULE_DESC[sec] : '');
+      return `<div class="card" style="margin:0"><h3>${esc(title)}</h3><div class="body">
+        ${Object.keys(data).map(k => fieldHtml(sec + '.' + k, data[k])).join('') || '<span class="muted">設定項目なし</span>'}
+      </div></div>`;
+    }).join('');
+    wireCfg(g);
+  }
+
+  async function loadCfg() {
+    const r = await get('/api/config');
+    CFG = (r && r.data) || CFG || {};
+  }
+
+  /* ================================================================== */
+  /* タブ描画                                                             */
+  /* ================================================================== */
+  const TAB_THROTTLE = { mods: 900, store: 1500, garden: 1500, market: 1500, temple: 1500, ascend: 1500, logs: 2000, saves: 3000 };
+  let lastTabAt = {};               // タブ毎に「最後に描画した時刻」を持つ
+  let lastMinigameReadySignature = null;
+  const RENDERERS = {
+    mods: renderMods, store: renderStore, garden: renderGarden, market: renderMarket,
+    temple: renderTemple, ascend: renderAscend, logs: renderLogs, saves: renderSaves,
+  };
+  function renderTab() {
+    if (!S) return;                 // 初回 poll 前は描画しない (null 参照防止)
+    // 転生直後などに解放状態が変わったら、通常のタブ描画間隔を待たず再描画する。
+    const mg = (S.snapshot && S.snapshot.mg) || {};
+    const readySignature = ['garden', 'market', 'pantheon', 'grimoire']
+      .map(k => mg[k] && mg[k].ready ? '1' : '0').join('');
+    if (readySignature !== lastMinigameReadySignature) {
+      lastMinigameReadySignature = readySignature;
+      ['garden', 'market', 'temple'].forEach(k => { lastTabAt[k] = 0; });
+    }
+    const now = Date.now();
+    if (tab === 'dash') { renderDash(); return; }
+    if (tab === 'raw') { if (!$('#rawCfg').value) $('#rawCfg').value = JSON.stringify(CFG, null, 2); return; }
+    const fn = RENDERERS[tab];
+    if (!fn) return;
+    const gap = TAB_THROTTLE[tab] || 1500;
+    if (tab === 'logs' && !$('#logAuto').checked && now - (lastTabAt[tab] || 0) < gap) return;
+    if (tab !== 'logs' && now - (lastTabAt[tab] || 0) < gap) return;
+    lastTabAt[tab] = now;
+    try { fn(); } catch (e) { console.error('render ' + tab + ' failed', e); }
+  }
+
+  /* ================================================================== */
+  /* 初期化                                                              */
+  /* ================================================================== */
+  function bind() {
+    $('#masterSw').onchange = async e => {
+      await post('/api/config', { patch: { master: e.target.checked } });
+      await act('setMaster', { on: e.target.checked }, true);
+      await loadCfg();
+      toast('ボットを' + (e.target.checked ? '再開' : '停止') + 'しました', e.target.checked ? 'ok' : 'bad');
+    };
+    $('#btnStop').onclick = () => { if (confirm('ボットを完全に終了しますか？\n(セーブは自動でバックアップされます)')) post('/api/stop'); };
+    $('#btnBuyAll').onclick = () => act('buyAllAffordable');
+    $('#btnCfgReset').onclick = async () => {
+      if (!confirm('すべての設定を初期値に戻しますか？')) return;
+      await post('/api/config/reset'); await loadCfg(); renderMods(); toast('設定を初期化しました', 'ok');
+    };
+    $('#gFill').onclick = () => { const s = $('#seedSel').value === '__auto__' ? gardenActiveSeed : $('#seedSel').value; if (!s) return toast('自動選択中の種がまだ決まっていません', 'bad'); act('gardenFill', { seed: s }); };
+    $('#gHarvestMature').onclick = () => act('gardenHarvestAll', {});
+    $('#gHarvestAll').onclick = () => act('gardenHarvestAll', { includeImmature: true });
+    $('#gFreeze').onclick = async () => { const r = await get('/api/garden'); const on = !(((r || {}).data || {}).freeze); await act('gardenFreeze', { on }); };
+    $('#gConvert').onclick = () => { if (confirm('庭を供儀しますか？全種解放済みだと砂糖ランプ+10、種は初期化されます。')) act('gardenConvert'); };
+    $('#seedSel').onchange = async () => {
+      const value = $('#seedSel').value;
+      const patch = value === '__auto__'
+        ? { garden: { autoSeedSwitch: true, farmSeed: ((CFG && CFG.garden && CFG.garden.farmSeed && CFG.garden.farmSeed !== 'auto') ? CFG.garden.farmSeed : 'bakerWheat') } }
+        : { garden: { autoSeedSwitch: false, farmSeed: value } };
+      await post('/api/config', { patch }); await loadCfg();
+      toast(value === '__auto__' ? '成熟後の種自動切替を有効にしました' : '固定種に切り替えました', 'ok');
+    };
+    $('#soilSel').onchange = () => act('gardenSetSoil', { key: $('#soilSel').value });
+    $('#mBroker').onclick = () => act('marketHireBroker');
+    $('#mOffice').onclick = () => act('marketUpgradeOffice');
+    $('#mSellAll').onclick = () => act('marketSellAll');
+    $('#pBuyAuto').onclick = () => act('buyPrestige', {});
+    $('#pFilter').onclick = () => { prestigeFilter = !prestigeFilter; $('#pFilter').textContent = prestigeFilter ? '全て表示' : '購入可能のみ'; lastTabAt = 0; renderAscend(); };
+    $('#logKind').onchange = renderLogFiles;
+    $('#logListRefresh').onclick = renderLogFiles;
+    $('#sBackup').onclick = () => act('__backup', { tag: 'manual' });
+    $('#sReload').onclick = () => { if (confirm('ゲームページを再読み込みしますか？')) act('__reload_page'); };
+    $('#sExport').onclick = async () => {
+      const r = await post('/api/action', { action: 'exportSaveCode', args: {} });
+      const code = ((r && r.data) || {}).code || '';
+      $('#saveCode').value = code;
+      toast(code ? 'セーブコードを書き出しました (' + code.length + ' 文字)' : '取得できませんでした', code ? 'ok' : 'bad');
+    };
+    $('#sImport').onclick = async () => {
+      const code = $('#saveCode').value.trim();
+      if (!code) return toast('コードを貼り付けてください', 'bad');
+      if (!confirm('このコードでセーブを上書きしますか？')) return;
+      await act('__import_code', { code });
+    };
+    $('#rReload').onclick = async () => { await loadCfg(); $('#rawCfg').value = JSON.stringify(CFG, null, 2); toast('読み直しました', 'ok'); };
+    $('#rSave').onclick = async () => {
+      try {
+        const obj = JSON.parse($('#rawCfg').value);
+        const r = await post('/api/config', { patch: obj });
+        await loadCfg();
+        toast(r && r.ok ? '設定を保存して反映しました' : '保存に失敗', r && r.ok ? 'ok' : 'bad');
+      } catch (e) { toast('JSONが不正です: ' + e.message, 'bad'); }
+    };
+    window.addEventListener('resize', drawChart);
+  }
+
+  async function init() {
+    buildNav();
+    bind();
+    await loadCfg();
+    await poll();          // 先に状態を取得してから描画する
+    setTab('dash');
+    setInterval(poll, 1200);
+    setInterval(() => { if (tab === 'logs' && $('#logAuto').checked) renderLogs(); }, 2500);
+  }
+  init();
+})();

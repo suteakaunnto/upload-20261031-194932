@@ -1,0 +1,15 @@
+# 自動生成されるもの (配布物には含めない)
+.venv/
+__pycache__/
+*.pyc
+browser_profile/
+logs/
+saves/
+config.json
+
+# テストの一時生成物
+tests/_live_profile/
+tests/_adv_profile/
+tests/_test_config.json
+tests/_live_config.json
+tests/_adv_config.json

@@ -1,0 +1,291 @@
+/* =====================================================================
+   Cookie Clicker Bot - in-page engine : API (Python からの呼び出し口)
+   ===================================================================== */
+(function (global) {
+  'use strict';
+  var Bot = global.__CCBOT;
+  if (!Bot) return;
+  var G = Bot.exported.G, num = Bot.exported.num, fmt = Bot.exported.fmt, clamp = Bot.exported.clamp;
+
+  /* ------------------------------------------------------------------ */
+  /* 手動アクション                                                       */
+  /* ------------------------------------------------------------------ */
+  var ACTIONS = {
+    /* --- 情報 --- */
+    ping: function () { return { pong: true, version: Bot.__version, ready: Bot.ready(), gameVersion: Bot.ready() ? G().version : '' }; },
+    capabilities: function () { return Bot.capabilities(); },
+    snapshot: function (a) { return Bot.snapshot(a || {}); },
+    config: function () { return Bot.getConfig(); },
+    stats: function () { return JSON.parse(JSON.stringify(Bot.stats)); },
+    schedule: function () {
+      var out = [];
+      for (var i = 0; i < Bot.schedule.length; i++) {
+        var s = Bot.schedule[i];
+        out.push({ name: s.name, ms: s.ms, enabled: s.enabled, lastRun: s.last ? (Date.now() - s.last) : null });
+      }
+      return out;
+    },
+
+    /* --- クリック --- */
+    click: function (a) {
+      var n = clamp(num((a || {}).times, 1), 1, 200);
+      var direct = !!(a || {}).direct;
+      var g = G(), done = 0, gained = 0, before = num(g.cookies);
+      for (var i = 0; i < n; i++) {
+        if (direct) { gained += num(g.computedMouseCps); g.Earn(num(g.computedMouseCps)); g.cookieClicks++; g.handmadeCookies += num(g.computedMouseCps); done++; }
+        else {
+          var c0 = num(g.cookieClicks);
+          g.ClickCookie({ preventDefault: function () { }, detail: 1 });
+          if (num(g.cookieClicks) > c0) done++; else break;
+        }
+      }
+      Bot.bump('clicks', done);
+      Bot.ev('clicker', 'manual-click', { times: n, direct: direct }, { done: done, gained: num(g.cookies) - before });
+      return { done: done, gained: num(g.cookies) - before };
+    },
+
+    /* --- ゴールデンクッキー --- */
+    popShimmers: function (a) {
+      var g = G(), n = 0;
+      var all = (a || {}).all;
+      for (var i = (g.shimmers || []).length - 1; i >= 0; i--) {
+        var sh = g.shimmers[i];
+        if (!sh || sh.popped) continue;
+        if (!all && sh.wrath && !Bot.cfg.golden.popWrath) continue;
+        if (Bot.popShimmer(sh)) n++;
+      }
+      return { popped: n };
+    },
+    popWrinklers: function (a) { return Bot.popAllWrinklers(!!(a || {}).shinyOnly); },
+
+    /* --- 購入 --- */
+    buyBuilding: function (a) { return Bot.buyBuilding((a || {}).key, num((a || {}).count, 1)); },
+    buyUpgrade: function (a) { return Bot.buyUpgrade((a || {}).name); },
+    buyAllAffordable: function () {
+      var g = G();
+      Bot.modUpgrade();
+      var n = 0;
+      for (var i = 0; i < g.ObjectsById.length; i++) {
+        var me = g.ObjectsById[i];
+        var guard = 0;
+        while (guard++ < 500 && num(g.cookies) >= me.getPrice() && !me.muted) {
+          var before = num(me.amount);
+          me.buy(1);
+          if (num(me.amount) <= before) break;
+          n++;
+        }
+      }
+      Bot.ev('building', 'buy-all-affordable', {}, { bought: n });
+      return { bought: n };
+    },
+
+    /* --- ランプ / 建物レベル --- */
+    harvestLump: function () {
+      var g = G();
+      var before = num(g.lumps);
+      var age = Date.now() - num(g.lumpT, Date.now());
+      if (!g.canLumps || !g.canLumps()) return { ok: false, error: 'lumps not available yet' };
+      if (age < num(g.lumpMatureAge, 0)) return { ok: false, error: 'not mature', ageHours: +(age / 3600000).toFixed(2) };
+      try { g.harvestLumps(1); if (g.computeLumpType) g.computeLumpType(); } catch (e) { return { ok: false, error: Bot.errStr(e) }; }
+      var got = num(g.lumps) - before;
+      Bot.ev('lump', 'manual-harvest', {}, { gained: got, total: num(g.lumps) });
+      return { ok: true, gained: got, total: num(g.lumps) };
+    },
+    levelUpBuilding: function (a) {
+      var key = (a || {}).key;
+      var me = Bot.findBuilding(key);
+      if (!me) return { ok: false, error: 'building not found: ' + key };
+      var g = G();
+      if (g.prefs) g.prefs.askLumps = 0;
+      var before = num(me.level), beforeL = num(g.lumps);
+      try { var fn = me.levelUp(); if (typeof fn === 'function') fn(true); } catch (e) { return { ok: false, error: Bot.errStr(e) }; }
+      var ok = num(me.level) > before;
+      if (ok) Bot.ev('lump', 'manual-level-up', { building: me.name, level: num(me.level) }, { cost: beforeL - num(g.lumps) });
+      return { ok: ok, level: num(me.level), need: before + 1 };
+    },
+
+    /* --- サンタ / ドラゴン / 季節 --- */
+    upgradeSanta: function () {
+      var g = G(), before = num(g.santaLevel);
+      try { g.UpgradeSanta(); } catch (e) { return { ok: false, error: Bot.errStr(e) }; }
+      var ok = num(g.santaLevel) !== before;
+      if (ok) Bot.ev('santa', 'manual-upgrade', { level: num(g.santaLevel) });
+      return { ok: ok, level: num(g.santaLevel) };
+    },
+    trainDragon: function () {
+      var g = G(), before = num(g.dragonLevel);
+      try { g.UpgradeDragon(); } catch (e) { return { ok: false, error: Bot.errStr(e) }; }
+      var ok = num(g.dragonLevel) !== before;
+      if (ok) Bot.ev('dragon', 'manual-train', { level: num(g.dragonLevel) });
+      return { ok: ok, level: num(g.dragonLevel) };
+    },
+    dragonAuras: function () { return Bot.dragonAuraList(); },
+    setAura: function (a) {
+      var slot = clamp(num((a || {}).slot, 0), 0, 1);
+      var v = (a || {}).aura;
+      var idx = Bot.resolveAura(v);
+      if (idx < 0) return { ok: false, error: 'unknown or locked aura: ' + v };
+      var g = G();
+      if (num(g.dragonLevel) < idx + 4) return { ok: false, error: 'aura not trained yet (need dragon level ' + (idx + 4) + ')' };
+      if (slot === 0) g.dragonAura = idx; else g.dragonAura2 = idx;
+      g.recalculateGains = 1; g.storeToRefresh = 1;
+      Bot.ev('dragon', 'set-aura', { slot: slot, aura: g.dragonAuras[idx].name, index: idx }, { manual: true });
+      return { ok: true, aura: g.dragonAuras[idx].name };
+    },
+    switchSeason: function (a) {
+      var g = G(), want = (a || {}).season;
+      if (!g.seasons || !g.seasons[want]) return { ok: false, error: 'unknown season: ' + want };
+      var up = Bot.findUpgrade(g.seasons[want].trigger);
+      if (!up) return { ok: false, error: 'trigger upgrade not found' };
+      var price = up.getPrice();
+      var before = g.season;
+      var ok = false;
+      try { ok = !!up.buy(1); } catch (e) { return { ok: false, error: Bot.errStr(e) }; }
+      if (ok) Bot.ev('season', 'manual-switch', { from: before, to: g.season }, { cost: price });
+      return { ok: !!ok, season: g.season, cost: price };
+    },
+    seasons: function () {
+      var g = G(), out = [];
+      for (var k in g.seasons) {
+        var up = Bot.findUpgrade(g.seasons[k].trigger);
+        out.push({ key: k, name: g.seasons[k].name, trigger: g.seasons[k].trigger, price: up ? up.getPrice() : null, active: g.season === k });
+      }
+      return out;
+    },
+
+    /* --- 庭 --- */
+    gardenState: function () { return Bot.gardenState(); },
+    gardenHarvestAt: function (a) {
+      var ok = Bot.gardenHarvestAt(num((a || {}).x, -1), num((a || {}).y, -1), 'manual');
+      return { ok: ok };
+    },
+    gardenHarvestAll: function (a) { return Bot.gardenHarvestAll(!(a || {}).includeImmature, (a || {}).keys); },
+    gardenPlant: function (a) { return { ok: Bot.gardenPlantAt((a || {}).seed, num((a || {}).x), num((a || {}).y), 'manual') }; },
+    gardenFill: function (a) {
+      var m = Bot.gardenM(); if (!m) return { ok: false, error: 'garden not ready' };
+      var seed = (a || {}).seed || Bot.cfg.garden.farmSeed || 'bakerWheat';
+      var n = 0;
+      for (var y = 0; y < 6; y++) for (var x = 0; x < 6; x++) {
+        if (!m.isTileUnlocked(x, y)) continue;
+        if (m.plot[y][x][0] >= 1) continue;
+        if (Bot.gardenPlantAt(seed, x, y, 'manual-fill')) n++;
+      }
+      return { ok: n > 0, planted: n, seed: seed };
+    },
+    gardenSetSoil: function (a) { return { ok: Bot.gardenSetSoil((a || {}).key) }; },
+    gardenFreeze: function (a) { return { ok: Bot.gardenSetFreeze(!!(a || {}).on) }; },
+    gardenConvert: function () { return { ok: Bot.gardenConvert() }; },
+    gardenPlanOrder: function () { return Bot.gardenPlanOrder(); },
+    gardenSeeds: function () {
+      var m = Bot.gardenM(); if (!m) return [];
+      var out = [];
+      for (var i = 0; i < m.plantsById.length; i++) {
+        var p = m.plantsById[i];
+        out.push({ key: p.key, name: p.name, unlocked: !!p.unlocked, plantable: p.plantable !== false, mature: p.mature, weed: !!Bot.GARDEN_WEEDS[p.key] });
+      }
+      return out;
+    },
+
+    /* --- 市場 --- */
+    marketState: function () { return Bot.marketState(); },
+    marketBuy: function (a) { return Bot.marketBuy(num((a || {}).id), num((a || {}).qty, 1)); },
+    marketSell: function (a) { return Bot.marketSell(num((a || {}).id), num((a || {}).qty, 1)); },
+    marketSellAll: function () {
+      var m = Bot.minigame('Bank'); if (!m) return { ok: false, error: 'market not ready' };
+      var n = 0;
+      for (var i = 0; i < m.goodsById.length; i++) if (num(m.goodsById[i].stock) > 0) { var r = Bot.marketSell(i, 10000); if (r.ok) n += r.qty; }
+      return { ok: n > 0, sold: n };
+    },
+    marketHireBroker: function () { return Bot.marketHireBroker(); },
+    marketUpgradeOffice: function () { return Bot.marketUpgradeOffice(); },
+
+    /* --- 神殿 / 魔法 --- */
+    pantheonState: function () { return Bot.pantheonState(); },
+    slotGod: function (a) { return Bot.slotGod((a || {}).god, num((a || {}).slot, 0)); },
+    grimoireState: function () { return Bot.grimoireState(); },
+    castSpell: function (a) { return Bot.castSpell((a || {}).spell); },
+
+    /* --- 転生 --- */
+    ascendInfo: function () { return Bot.ascendInfo(); },
+    ascendNow: function (a) { return { ok: Bot.ascendNow((a || {}).reason || 'manual') }; },
+    reincarnateNow: function (a) { return { ok: Bot.reincarnateNow((a || {}).reason || 'manual') }; },
+    buyPrestige: function (a) {
+      if ((a || {}).name) return Bot.buyPrestigeUpgrade(a.name);
+      Bot.buyPrestigeUpgrades();
+      return { ok: true };
+    },
+    prestigeList: function () { return Bot.prestigeList(); },
+    prestigePriority: function () { return Bot.PRESTIGE_PRIORITY.slice(); },
+    setPermanentUpgrade: function (a) { return Bot.setPermanentUpgrade(num((a || {}).slot, 0), (a || {}).name); },
+
+    /* --- セーブ / 保守 --- */
+    saveGame: function () { return { ok: Bot.saveGame() }; },
+    exportSave: function () {
+      var code = Bot.exportSave();
+      return { ok: !!code, length: code ? code.length : 0 };
+    },
+    importSave: function (a) { return { ok: Bot.importSave((a || {}).code) }; },
+    closePrompt: function () { var g = G(); if (g.promptOn) { g.ClosePrompt(); Bot.ev('housekeep', 'manual-close-prompt'); return { ok: true }; } return { ok: false }; },
+    resumeGame: function () { return { ok: Bot.resumeGame() }; },
+    mute: function (a) {
+      var g = G(), on = (a || {}).on !== false;
+      g.volume = on ? 0 : 75; if (g.setVolume) g.setVolume(g.volume);
+      g.volumeMusic = on ? 0 : 50; if (g.setVolumeMusic) g.setVolumeMusic(g.volumeMusic);
+      return { ok: true, muted: on };
+    },
+    reload: function () { try { global.location.reload(); } catch (e) { return { ok: false }; } return { ok: true }; },
+
+    /* --- モジュール制御 --- */
+    setModuleEnabled: function (a) {
+      var name = (a || {}).name, on = !!(a || {}).enabled;
+      for (var i = 0; i < Bot.schedule.length; i++) {
+        if (Bot.schedule[i].name === name) { Bot.schedule[i].enabled = on; Bot.ev('core', 'module-toggle', { module: name, enabled: on }); return { ok: true }; }
+      }
+      return { ok: false, error: 'unknown module: ' + name };
+    },
+    runModuleOnce: function (a) {
+      var name = (a || {}).name;
+      for (var i = 0; i < Bot.schedule.length; i++) {
+        if (Bot.schedule[i].name === name) {
+          try { Bot.schedule[i].fn(100, Date.now()); return { ok: true }; }
+          catch (e) { return { ok: false, error: Bot.errStr(e) }; }
+        }
+      }
+      return { ok: false, error: 'unknown module: ' + name };
+    },
+    setMaster: function (a) {
+      Bot.cfg.master = !!(a || {}).on;
+      Bot.ev('core', 'master-switch', { on: Bot.cfg.master });
+      return { ok: true, master: Bot.cfg.master };
+    }
+  };
+  Bot.ACTIONS = ACTIONS;
+
+  /* ------------------------------------------------------------------ */
+  /* 単一エントリポイント                                                  */
+  /* ------------------------------------------------------------------ */
+  Bot.run = function (name, args) {
+    var fn = ACTIONS[name];
+    if (typeof fn !== 'function') {
+      // 動的に Bot 上の関数も探す
+      if (typeof Bot[name] === 'function') fn = function (a) { return Bot[name](a); };
+    }
+    if (typeof fn !== 'function') return { ok: false, error: 'unknown action: ' + name };
+    var needReady = ['ping', 'capabilities', 'config', 'schedule', 'stats'].indexOf(name) === -1;
+    if (needReady && !Bot.ready()) return { ok: false, error: 'game not ready', name: name };
+    try {
+      var data = fn(args || {});
+      if (data === undefined) data = null;
+      return { ok: true, name: name, data: data };
+    } catch (e) {
+      Bot.stats.errors++;
+      return { ok: false, name: name, error: Bot.errStr(e) };
+    }
+  };
+
+  /* drainEvents も run 経由で叩けるように */
+  ACTIONS.drainEvents = function (a) { return Bot.drainEvents(num((a || {}).since, 0), num((a || {}).limit, 3000)); };
+  ACTIONS.setConfig = function (a) { return Bot.setConfig(a || {}); };
+  ACTIONS.exportSaveCode = function () { return { code: Bot.exportSave() }; };
+
+})(window);

@@ -1,0 +1,10 @@
+# Cookie Clicker Bot が必要とする追加ライブラリ
+#
+# インストール : install.bat  (または  pip install -r requirements.txt)
+# 削除         : uninstall.bat (または  pip uninstall -r requirements.txt -y)
+#
+# playwright 1.44 以降にはブラウザ本体を削除する
+#   python -m playwright uninstall --all
+# が用意されています。
+
+playwright>=1.44.0

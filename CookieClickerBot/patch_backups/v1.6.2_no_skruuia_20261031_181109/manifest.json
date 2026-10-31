@@ -1,0 +1,40 @@
+{
+  "version": "1.6.2",
+  "createdAt": "2026-10-31T18:11:09",
+  "files": {
+    "ccbot/js/00_core.js": {
+      "sha256Before": "03b75b86bb5ce4ce1f5926253efbf5507df18314736a50beffa3d56515c4430f",
+      "sha256After": "8c055f25ef2b01889d5acc78a33376180fd7b234f58dc2dfe179c1db40a6df7c"
+    },
+    "ccbot/js/60_temple_grimoire.js": {
+      "sha256Before": "64cf49026d712000f6837881409d5a41538f8a4a590ff593cb5f5aa7575110be",
+      "sha256After": "e87a4ae4b6cd7de6ada55d0cf132549c7f485f3b732d60104bd9cac299483e11"
+    },
+    "ccbot/config.py": {
+      "sha256Before": "d3046e08494135c30fcf3cd57988acdc2c2a80e367e1305a4e8b6646ed5ffcb5",
+      "sha256After": "5eada123673c8fe3d2fa9fa587722b3b2830c81930b5fcae129957da1dd6c03c"
+    },
+    "ccbot/web/app.js": {
+      "sha256Before": "9609afb0b86ad7c017c92a7cee4f1b8a49b2859496cfcb7736cf95612e7ae68d",
+      "sha256After": "cd13142f7982970fd984321a79547e5c022fa24cc2fdb8b828d9f9a174a8cc9b"
+    },
+    "ccbot/__init__.py": {
+      "sha256Before": "3284757888c06d58a09aa5153caaf59005d5c290936e2178dc64eca5aea43255",
+      "sha256After": "d2422aeab38c4e172d51f91eec55e9a8ced9dafef87582407808979167624de2"
+    },
+    "tests/run_engine_test.js": {
+      "sha256Before": "40ba6c0ee3ecf6cc3f3d623326af57df8edf4e365faf465946afbdb0a5711dc5",
+      "sha256After": "d7734106470d1db57d2db6c4088708c613dd2c641dbc717de02947867b7cbb69"
+    },
+    "tests/test_python.py": {
+      "sha256Before": "c8827c5cf020359343b90094a2ee53d84802001ba643454ee204d44d5631a00f",
+      "sha256After": "f4bd066b53af9a107e5531bed2a5e10031055949850fcec8c490c50c71e6556a"
+    }
+  },
+  "backupOnlyFiles": {
+    "config.json": {
+      "sha256Before": "25cca524a4c48786629b04b92607dd782de7e792296532bb2e4c2c44ff2ec7f4",
+      "reason": "Config.load will sanitize legacy Pantheon loadout on next startup"
+    }
+  }
+}

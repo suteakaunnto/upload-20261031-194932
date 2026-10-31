@@ -1,0 +1,76 @@
+{
+  "created_at": "2026-10-26T10:09:21",
+  "project_root": "C:\\Users\\Owner\\Downloads\\workspace (4)\\CookieClickerBot",
+  "files": [
+    {
+      "path": "ccbot/engine.py",
+      "status": "更新",
+      "original_sha256": "512eb3543218920e74558c93dfc4250713576eb07683b5b879d0d601226fb143",
+      "patched_sha256": "98909378342e9b810e5d62bb6d77ffd6c868f88173df24f8e1913ee5c2be0f6f",
+      "backup_path": "patch_backups/complete-cumulative-20261026-100920/ccbot/engine.py"
+    },
+    {
+      "path": "ccbot/js/10_state.js",
+      "status": "更新",
+      "original_sha256": "280144d35e1efb35d2a3b662e5587c143921ff6bdc48939e199820c881df51e9",
+      "patched_sha256": "24346a4c8d938627a36a097c07516e4ebd7ecdabe3c8ce55a4e088394d472d24",
+      "backup_path": "patch_backups/complete-cumulative-20261026-100920/ccbot/js/10_state.js"
+    },
+    {
+      "path": "ccbot/js/20_basic.js",
+      "status": "更新",
+      "original_sha256": "a36a8b9ccb7b3f340b1aa02f966ef12483a85a7124a38f4ab8bfdaa8fdb3ccf5",
+      "patched_sha256": "ee074b3422118b31d50ba2959531dfa3246cf044b60feb63a440b905fb0b36d1",
+      "backup_path": "patch_backups/complete-cumulative-20261026-100920/ccbot/js/20_basic.js"
+    },
+    {
+      "path": "ccbot/js/90_api.js",
+      "status": "更新",
+      "original_sha256": "a5efb8d57af18f2972cf1a6e09e356672fc3067565748a6b7b1a357b610471e9",
+      "patched_sha256": "32b42b4b2a358b112e3a5363bf59f33afde411a4937218f22da0480fdf093a3a",
+      "backup_path": "patch_backups/complete-cumulative-20261026-100920/ccbot/js/90_api.js"
+    },
+    {
+      "path": "ccbot/web/app.js",
+      "status": "更新",
+      "original_sha256": "82f6f04df44b221c826d7be1bb31cbaa4aa6f630ce6624a81b0d65df10b1160b",
+      "patched_sha256": "78a70e11d30f2fdff32de2b33d07fed68653a7e04e7fddfa3857d8a57e06039c",
+      "backup_path": "patch_backups/complete-cumulative-20261026-100920/ccbot/web/app.js"
+    },
+    {
+      "path": "ccbot/web/style.css",
+      "status": "更新",
+      "original_sha256": "d8f50a6648f8bc02e4f0f16934d3e2610c4bd2f7e0e4e9b684e41d741eee4683",
+      "patched_sha256": "e14c48ec407a6a5d80c656ab36e6ff6d768a25ae8a440f0b2e7ac6741f99066a",
+      "backup_path": "patch_backups/complete-cumulative-20261026-100920/ccbot/web/style.css"
+    },
+    {
+      "path": "tests/mock_game.js",
+      "status": "更新",
+      "original_sha256": "a7903f17647584173a673d645d08b6cfc75ca2c07b8ab4b4436fb4207fdd6509",
+      "patched_sha256": "d53111b863ef61f5adac945ec86252cbeada38cc0a4cce0bac63ccdc5f953d44",
+      "backup_path": "patch_backups/complete-cumulative-20261026-100920/tests/mock_game.js"
+    },
+    {
+      "path": "tests/run_engine_test.js",
+      "status": "更新",
+      "original_sha256": "e47d2496b9046eb78f778080097fcc009d2a34f740750672455c65ea2abb2368",
+      "patched_sha256": "c721b425acc99e13b8110fd46cad1e9432c0941a84d9ac5d54304817e3683914",
+      "backup_path": "patch_backups/complete-cumulative-20261026-100920/tests/run_engine_test.js"
+    },
+    {
+      "path": "tests/test_python.py",
+      "status": "更新",
+      "original_sha256": "d4cf16d58cb04881bda22688737a1d490d9ff735913c1eea2761e5509ea7653f",
+      "patched_sha256": "c8827c5cf020359343b90094a2ee53d84802001ba643454ee204d44d5631a00f",
+      "backup_path": "patch_backups/complete-cumulative-20261026-100920/tests/test_python.py"
+    },
+    {
+      "path": "tests/test_ui.py",
+      "status": "更新",
+      "original_sha256": "036af8a6f98cfbca86eddc819e5193b132aa382dfb5373162f74cebbe78b58df",
+      "patched_sha256": "e31e74f3ff7e12d84ebcf6e70d1df40b6abf1a23d44b904418c057ef970825f9",
+      "backup_path": "patch_backups/complete-cumulative-20261026-100920/tests/test_ui.py"
+    }
+  ]
+}
